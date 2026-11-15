@@ -1,0 +1,24 @@
+Category	Feature Name	Description	Priority	Estimated Effort	Costing & Economics	Status
+Current State Audit	Speech & Dialogue Video Hook Detection	Natural sentence boundary reconstruction & audio pause/silence detection for podcasts/speeches	Completed	Done	Local Ollama / Free Whisper	Completed
+Current State Audit	Song & Music Video Mukhda Detection	Detects chorus and mukhda peak from lyrics and rhythm	Completed	Done	Local Ollama / Free Whisper	Completed
+Current State Audit	9:16 Vertical Video Rendering	Aesthetic blurred background + centered vertical short with FFmpeg	Completed	Done	Local CPU compute	Completed
+Current State Audit	Viral Titles Descriptions & Tags	Auto-generates emoji-rich titles SEO descriptions & tags	Completed	Done	Ollama Gemma	Completed
+Current State Audit	Subscribe & CTA Outro Overlay	Embeds 3.5s animated Subscribe/Like card at short end	Completed	Done	FFmpeg filtergraph	Completed
+Current State Audit	1-Click Copy & MP4 Download	Instant copy buttons for title/desc/tags and direct download	Completed	Done	Zero cost	Completed
+Live Readiness Assessment	Production Scalability (Concurrency Bottleneck)	Currently runs local FFmpeg. If 10 users submit videos server CPU/RAM will bottleneck. Needs queue worker concurrency limit.	P0 - Blocker for Live	1-2 Days	Server $20-$40/mo (Hetzner 4-core VPS)	Pending
+Live Readiness Assessment	Cloud Video Storage (AWS S3 / Cloudflare R2)	Currently storing videos on local disk (public/media). Live launch needs cloud storage with auto-cleanup after 7 days.	P0 - Blocker for Live	1 Day	Cloudflare R2 (~$0.015/GB with $0 egress)	Pending
+Live Readiness Assessment	Authorization & Project Privacy Checks	Ensure users can only view and download their own projects (Policy gates in controllers)	P0 - Blocker for Live	4 Hours	Zero cost	Pending
+Admin Section	Admin Master Dashboard	Overview of total users total shorts generated queue health and system metrics	P0 - Essential	1 Day	Zero cost	Pending
+Admin Section	User Management Table	View all registered users registration dates active projects and ban/activate toggle	P0 - Essential	4 Hours	Zero cost	Pending
+Admin Section	Manual User Approval Workflow	Setting to require admin manual approval before new users can process videos	P1 - High	4 Hours	Zero cost	Pending
+Admin Section	Manual Token Credit / Debit System	Admin can manually add or deduct tokens to any user wallet with reason log	P0 - Essential	4 Hours	Zero cost	Pending
+Admin Section	Manual Payment / Recharge Request Approval	Admin dashboard to view user payment proof (UPI/QR slip) and approve token recharge	P1 - High	1 Day	Zero cost	Pending
+Token & Costing System	User Token Balance & Wallet	Each user has a token balance. Register bonus (e.g. 20 free tokens). Each short consumes tokens.	P0 - Essential	1 Day	Zero cost	Pending
+Token & Costing System	Dynamic Cost Preview in Creation Form	User sees their balance project cost and remaining balance before starting video process	P0 - Essential	4 Hours	Zero cost	Pending
+Token & Costing System	Token Purchase & Pricing Plans UI	Pricing table: Free (20 tokens) Starter (100 tokens ₹299) Pro (350 tokens ₹799) Agency (1000 tokens ₹1999)	P1 - High	1 Day	Revenue Generating	Pending
+Token & Costing System	Actual Unit Cost Economics	Actual cost per short: ₹0.50 - ₹1.50 ($0.006 - $0.018). Selling price: ₹15 - ₹30 per short. Margin: 92%+	Business Model	N/A	90%+ Gross Margin	Defined
+Song vs Dialogue Options	Mode Selection Switch in UI	Dropdown/toggle in create form: 'Song / Music Video Mode' vs 'Podcast / Speech Dialogue Mode'	P0 - Essential	4 Hours	Zero cost	Pending
+Song vs Dialogue Options	Token Differentiation by Mode	Song mode takes 15 tokens (heavy beat/audio analysis) vs Dialogue mode takes 10 tokens	P0 - Essential	2 Hours	Controls compute costs	Pending
+Viral Quality Features	Alex Hormozi Style Animated Captions	Overlay animated karaoke subtitles (bouncing words colorful text) on the short	P1 - High	2-3 Days	Free via Whisper word timestamps	Pending
+Viral Quality Features	Custom Channel Logo & Watermark	Allow user to upload their own logo/handle for the outro CTA card or watermark	P2 - Medium	1 Day	Zero cost	Pending
+Viral Quality Features	Direct YouTube Shorts / Reels Publish	OAuth 2.0 integration to directly publish generated shorts to user YouTube channel	P2 - Medium	3-4 Days	YouTube Data API v3 (Free tier)	Pending
