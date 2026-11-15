@@ -1,0 +1,42 @@
+<?php
+
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\VideoProjectController;
+use Illuminate\Support\Facades\Route;
+
+// Public routes
+Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect()->route('dashboard');
+    }
+    return view('welcome');
+})->name('home');
+
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
+});
+
+// Authenticated routes
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // Video Projects & Shorts
+    Route::get('/projects/create', [VideoProjectController::class, 'create'])->name('projects.create');
+    Route::post('/projects', [VideoProjectController::class, 'store'])->name('projects.store');
+    Route::get('/projects/{id}', [VideoProjectController::class, 'show'])->name('projects.show');
+    Route::delete('/projects/{id}', [VideoProjectController::class, 'destroy'])->name('projects.destroy');
+    Route::get('/api/projects/{id}/status', [VideoProjectController::class, 'status'])->name('api.projects.status');
+
+    // Notifications
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read_all');
+});
