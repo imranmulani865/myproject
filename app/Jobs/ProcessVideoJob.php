@@ -33,9 +33,14 @@ class ProcessVideoJob implements ShouldQueue
             'progress_percent' => 5,
         ]);
 
-        $pythonBin = env('PYTHON_PATH', 'python');
-        $scriptPath = base_path('python/process_video.py');
-        $dbPath = database_path('database.sqlite');
+        $pythonEnv = env('PYTHON_PATH', '.venv' . DIRECTORY_SEPARATOR . 'Scripts' . DIRECTORY_SEPARATOR . 'python.exe');
+        if ($pythonEnv === 'python' || $pythonEnv === 'python3') {
+            $pythonBin = realpath(base_path('.venv' . DIRECTORY_SEPARATOR . 'Scripts' . DIRECTORY_SEPARATOR . 'python.exe')) ?: $pythonEnv;
+        } else {
+            $pythonBin = realpath($pythonEnv) ?: realpath(base_path($pythonEnv)) ?: str_replace('/', DIRECTORY_SEPARATOR, base_path($pythonEnv));
+        }
+        $scriptPath = realpath(base_path('python/process_video.py')) ?: str_replace('/', DIRECTORY_SEPARATOR, base_path('python/process_video.py'));
+        $dbPath = realpath(database_path('database.sqlite')) ?: str_replace('/', DIRECTORY_SEPARATOR, database_path('database.sqlite'));
         $ollamaHost = env('OLLAMA_HOST', 'http://127.0.0.1:11434');
         $ollamaModel = env('OLLAMA_MODEL', 'gemma:2b');
 
