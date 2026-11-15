@@ -191,6 +191,32 @@ def reconstruct_sentences(transcript_items):
 
     return sentences
 
+def clean_bracketed_annotations(raw_items):
+    """
+    Strips noise tags like [Music], [Applause], [संगीत], [प्रशंसा], [हंसी], (Music), etc.
+    from transcript items and discards empty noise-only items.
+    """
+    cleaned = []
+    bracket_pattern = re.compile(r'\[.*?\]|\(.*?\)')
+    for item in raw_items:
+        t = getattr(item, 'text', '') if not isinstance(item, dict) else item.get('text', '')
+        s = getattr(item, 'start', 0.0) if not isinstance(item, dict) else item.get('start', 0.0)
+        d = getattr(item, 'duration', 0.0) if not isinstance(item, dict) else item.get('duration', 0.0)
+        
+        txt = bracket_pattern.sub('', t).strip()
+        txt = re.sub(r'^[🎵🎶🎸🎤\s\-\.\,\:\।\|]+', '', txt).strip()
+        
+        if txt and len(txt) > 1:
+            start_f = float(s)
+            dur_f = float(d)
+            cleaned.append({
+                'start': start_f,
+                'duration': dur_f,
+                'end': round(start_f + dur_f, 2),
+                'text': txt
+            })
+    return cleaned
+
 def is_song_or_music(video_title, transcript_items=None):
     """
     Detects if the video is a Song, Music Track, or Music Video.
@@ -214,118 +240,129 @@ def is_song_or_music(video_title, transcript_items=None):
 def find_song_mukhda_hooks(video_title, raw_transcript, total_duration, clips_count, max_duration_pref):
     """
     Specialized Music Hook & Mukhda Extractor:
-    Finds the Mukhda (Chorus / Peak Hook) where the song's energy and main lyrics peak!
-    Ensures strict duration capping (e.g. 25s - 32s for 30s target).
+    - Automatically cleans noise annotations like [संगीत], [प्रशंसा], [Music].
+    - Groups lyrics into complete natural stanzas/verses without cutting mid-word or mid-line!
+    - Dynamic duration range: 18s to 55s (lets the singer finish the phrase naturally).
+    - If clips_count == 0 (All Possible Cuts): partitions the song into ALL complete stanzas.
+    - If clips_count > 0: selects the top stanzas by Mukhda/Chorus energy and title matching.
     """
-    shorts = []
-    if not raw_transcript:
+    cleaned_transcript = clean_bracketed_annotations(raw_transcript)
+    if not cleaned_transcript:
         return []
 
-    # Clean title keywords (e.g. "शहर में", "sheher mein", etc.)
-    title_parts = re.split(r'[\•\|\-\:\(\)]', video_title)
+    is_all_cuts = (clips_count == 0 or str(clips_count).lower() in ['0', 'all'])
+
+    # Title keywords for Mukhda identification
+    title_parts = re.split(r'[\•\|\-\:\(\)\[\]]', video_title)
     main_title = title_parts[0].strip() if title_parts else video_title
-    
     keywords = [k.lower().strip() for k in main_title.split() if len(k) > 1]
     if len(title_parts) > 1:
         keywords.extend([k.lower().strip() for k in title_parts[1].split() if len(k) > 1])
 
-    # Target duration bounds
-    if max_duration_pref <= 35:
-        target_dur = 30.0
-        min_allowed = 22.0
-        max_allowed = 32.0
+    # Extract all natural complete stanzas across the timeline
+    all_stanzas = []
+    n = len(cleaned_transcript)
+    i = 0
+
+    while i < n:
+        start_idx = i
+        start_time = max(0.0, cleaned_transcript[start_idx]['start'] - 0.20)
+        accumulated_lyrics = []
+        end_time = cleaned_transcript[start_idx]['end']
+
+        j = start_idx
+        while j < n:
+            item = cleaned_transcript[j]
+            accumulated_lyrics.append(item['text'])
+            end_time = item['end']
+            dur_so_far = end_time - start_time
+
+            next_gap = (cleaned_transcript[j+1]['start'] - item['end']) if (j + 1 < n) else 999.0
+            is_stanza_boundary = (next_gap >= 0.40) or (j + 1 == n)
+
+            # Minimum 20s to form a satisfying short, snap to the natural pause
+            if dur_so_far >= 20.0 and is_stanza_boundary:
+                break
+
+            # If duration reaches 45s, break at the next natural line end
+            if dur_so_far >= 45.0:
+                break
+
+            j += 1
+
+        final_end = min(total_duration, end_time + 0.35)
+        final_dur = round(final_end - start_time, 1)
+
+        # A valid short stanza must be at least 15s
+        if final_dur >= 15.0:
+            full_lyrics = " ".join(accumulated_lyrics)
+            lyrics_lower = full_lyrics.lower()
+
+            # Score this stanza's viral / Mukhda quality
+            score = 0
+            if 20.0 <= start_time <= (total_duration * 0.85):
+                score += 3
+            for kw in keywords:
+                if kw and kw in lyrics_lower:
+                    score += 8
+            if len(accumulated_lyrics) >= 3:
+                score += 2
+
+            all_stanzas.append({
+                "start_seconds": round(start_time, 2),
+                "end_seconds": round(final_end, 2),
+                "duration_seconds": int(round(final_dur)),
+                "score": score,
+                "first_line": accumulated_lyrics[0] if accumulated_lyrics else "Song Hook",
+                "full_lyrics": full_lyrics
+            })
+
+        i = j + 1
+
+    if not all_stanzas:
+        return []
+
+    # Filter/Select stanzas based on clips_count
+    if is_all_cuts:
+        selected_stanzas = all_stanzas
     else:
-        target_dur = float(max_duration_pref)
-        min_allowed = 35.0
-        max_allowed = float(max_duration_pref)
-
-    # Score each lyric line as candidate for Mukhda / Chorus start
-    candidates = []
-    for idx, item in enumerate(raw_transcript):
-        txt = item['text'].lower()
-        score = 0
-        
-        # Mukhda / Chorus usually starts after intro (> 25s) and before final fadeout
-        if 25.0 <= item['start'] <= (total_duration * 0.85):
-            score += 3
-        
-        # Matches title words (Mukhda almost always contains the title hook!)
-        for kw in keywords:
-            if kw and (kw in txt or kw in item['text']):
-                score += 8
-                
-        # Length of text should be non-empty
-        if len(item['text'].strip()) > 3:
-            score += 1
-
-        candidates.append((idx, score, item))
-
-    # Sort descending by score
-    candidates.sort(key=lambda x: x[1], reverse=True)
-
-    chosen_intervals = []
-
-    for start_idx, score, item in candidates:
-        if len(shorts) >= clips_count:
-            break
-
-        cand_start = float(item['start'])
-
-        # Prevent overlapping with already extracted shorts (minimum 25s gap)
-        overlaps = False
-        for c_start, c_end in chosen_intervals:
-            if not (cand_start >= c_end or (cand_start + target_dur) <= c_start):
-                overlaps = True
+        # Rank by score and pick top clips_count non-overlapping
+        sorted_stanzas = sorted(all_stanzas, key=lambda x: x['score'], reverse=True)
+        selected_stanzas = []
+        chosen_intervals = []
+        for s in sorted_stanzas:
+            if len(selected_stanzas) >= clips_count:
                 break
-        if overlaps:
-            continue
+            c_start, c_end = s['start_seconds'], s['end_seconds']
+            overlaps = any(not (c_start >= e or c_end <= st) for st, e in chosen_intervals)
+            if not overlaps:
+                selected_stanzas.append(s)
+                chosen_intervals.append((c_start, c_end))
 
-        # Accumulate lyrics up to target_dur (strict ceiling: max_allowed)
-        clip_lyrics = []
-        actual_end = cand_start
+        # Re-sort chronologically by start time for a pleasant viewer experience
+        selected_stanzas.sort(key=lambda x: x['start_seconds'])
 
-        for i in range(start_idx, len(raw_transcript)):
-            cur_line = raw_transcript[i]
-            cur_end = float(cur_line['start'] + cur_line['duration'])
-            dur_so_far = cur_end - cand_start
+    # Build final shorts records with clean Unicode titles and rich descriptions
+    shorts = []
+    for idx, s in enumerate(selected_stanzas):
+        clean_first = re.sub(r'[\[\]\(\)\{\}\<\>\/\\\|\:\;\*\+\=\_\#\@\$\%\^\&\~]+', ' ', s['first_line']).strip()
+        first_snippet = clean_first[:32].strip() if clean_first else "Mukhda Peak"
+        clean_main_title = re.sub(r'[\[\]\(\)\{\}\<\>\/\\\|\:\;\*\+\=\_\#\@\$\%\^\&\~]+', ' ', main_title).strip()
 
-            if dur_so_far <= max_allowed + 1.0:
-                clip_lyrics.append(cur_line['text'])
-                actual_end = cur_end
-            else:
-                break
-
-        actual_duration = round(actual_end - cand_start, 1)
-        if actual_duration < min_allowed:
-            # If slightly short, extend to clean target_dur
-            actual_end = min(total_duration, cand_start + target_dur)
-            actual_duration = round(actual_end - cand_start, 1)
-
-        # STRICT CLAMP: Duration cannot exceed max_allowed!
-        if actual_duration > max_allowed:
-            actual_end = cand_start + max_allowed
-            actual_duration = max_allowed
-
-        chosen_intervals.append((cand_start, actual_end))
-
-        lyrics_summary = " ".join(clip_lyrics).replace('\n', ' ').strip()
-        first_line = clip_lyrics[0] if clip_lyrics else "Song Hook"
-        clean_first = re.sub(r'[^\w\s]', '', first_line)[:25].strip()
-
-        title = f"{main_title[:30]} - Mukhda Peak! 🔥 {clean_first} #Shorts"
+        title = f"{clean_main_title[:30]} - {first_snippet}! 🔥 #Shorts"
         desc = (
             f"🎵 Best Mukhda / Chorus hook from '{video_title}'.\n\n"
-            f"🎤 Lyrics:\n\"{lyrics_summary[:200]}...\"\n\n"
+            f"🎤 Lyrics:\n\"{s['full_lyrics'][:200]}...\"\n\n"
             f"🔔 Love this song? Drop a LIKE, leave a COMMENT, and SUBSCRIBE to the channel for more daily music shorts! 🎸🚀\n\n"
             f"#Shorts #Music #Song #Trending #Viral #Lyrics #SurRiwaaz"
         )
-        tags = f"Shorts, Music, Song, Best Lyrics, Mukhda, Chorus, Viral Song, YouTube Shorts, Trending, Subscribe"
+        tags = "Shorts, Music, Song, Best Lyrics, Mukhda, Chorus, Viral Song, YouTube Shorts, Trending, Subscribe"
 
         shorts.append({
-            "start_seconds": round(cand_start, 2),
-            "end_seconds": round(actual_end, 2),
-            "duration_seconds": int(round(actual_duration)),
-            "hook_reason": f"Song Mukhda / Main Chorus hook containing central title themes and peak vocal energy.",
+            "start_seconds": s['start_seconds'],
+            "end_seconds": s['end_seconds'],
+            "duration_seconds": s['duration_seconds'],
+            "hook_reason": f"Complete natural stanza ({s['start_seconds']}s - {s['end_seconds']}s) with peak musical melody & lyrical completion.",
             "title": title[:95],
             "description": desc,
             "tags": tags
@@ -407,91 +444,112 @@ def call_ollama_gemma(prompt, ollama_host="http://127.0.0.1:11434", model="gemma
 
 def find_natural_sentence_hooks(sentences, clips_count, max_duration_pref, total_duration):
     """
-    Standard speech hook finder with complete sentence boundaries and dynamic duration capping.
+    Dialogue & Speech Hook Extractor:
+    - Cleans noise annotations and groups speech into complete thoughts.
+    - Dynamically expands between 18s and 55s to ensure sentences are NEVER chopped mid-thought!
+    - If clips_count == 0 (All Possible Cuts): extracts ALL complete narrative sections.
+    - If clips_count > 0: ranks candidate hooks by engagement markers (questions, high-impact words).
     """
-    shorts = []
     if not sentences:
         return []
 
-    if max_duration_pref <= 35:
-        min_target = 18.0
-        max_target = 32.0
-    else:
-        min_target = 30.0
-        max_target = float(max_duration_pref)
+    is_all_cuts = (clips_count == 0 or str(clips_count).lower() in ['0', 'all'])
+    hook_keywords = ['why', 'how', 'secret', 'truth', 'mistake', 'biggest', 'never', 'always', 'imagine', 'what if', 'shocking', 'best', 'listen', 'look at', 'remember', 'rule', 'क्यो', 'कैसे', 'सच', 'गलती', 'रहस्य', 'सुनो']
 
-    hook_keywords = ['why', 'how', 'secret', 'truth', 'mistake', 'biggest', 'never', 'always', 'imagine', 'what if', 'shocking', 'best', 'listen', 'look at', 'remember', 'rule']
-    
-    candidate_starts = []
-    for idx, s in enumerate(sentences):
-        txt = s['text'].lower()
-        score = 0
-        if any(w in txt for w in hook_keywords):
-            score += 3
-        if '?' in s['text'] or '!' in s['text']:
-            score += 2
-        if len(txt.split()) > 4:
-            score += 1
-        candidate_starts.append((idx, score))
+    all_segments = []
+    n = len(sentences)
+    i = 0
 
-    candidate_starts.sort(key=lambda x: x[1], reverse=True)
-    chosen_intervals = []
-
-    for start_idx, _ in candidate_starts:
-        if len(shorts) >= clips_count:
-            break
-
-        start_time = sentences[start_idx]['start']
-        overlaps = False
-        for c_start, c_end in chosen_intervals:
-            if not (start_time >= c_end or (start_time + min_target) <= c_start):
-                overlaps = True
-                break
-        if overlaps:
-            continue
-
-        end_time = start_time
+    while i < n:
+        start_idx = i
+        start_time = max(0.0, sentences[start_idx]['start'] - 0.15)
         accumulated_text = []
-        hook_reason = f"Gripping opener: '{sentences[start_idx]['text'][:60]}...'"
+        end_time = sentences[start_idx]['end']
 
-        for curr_idx in range(start_idx, len(sentences)):
-            curr_sent = sentences[curr_idx]
-            prospective_duration = curr_sent['end'] - start_time
+        j = start_idx
+        while j < n:
+            curr_sent = sentences[j]
             accumulated_text.append(curr_sent['text'])
             end_time = curr_sent['end']
+            dur_so_far = end_time - start_time
 
-            if prospective_duration >= min_target:
+            next_gap = (sentences[j+1]['start'] - curr_sent['end']) if (j + 1 < n) else 999.0
+            is_sentence_end = any(curr_sent['text'].rstrip().endswith(p) for p in ['.', '!', '?', '।', '|', '\n']) or (next_gap >= 0.40) or (j + 1 == n)
+
+            # Snap to natural boundary after ~20s
+            if dur_so_far >= 20.0 and is_sentence_end:
                 break
 
-        actual_duration = round(end_time - start_time, 1)
-        if actual_duration > max_target:
-            end_time = start_time + max_target
-            actual_duration = max_target
+            if dur_so_far >= 48.0:
+                break
 
-        if actual_duration < 15.0:
-            continue
+            j += 1
 
-        chosen_intervals.append((start_time, end_time))
+        final_end = min(total_duration, end_time + 0.35)
+        final_dur = round(final_end - start_time, 1)
 
-        first_sentence = sentences[start_idx]['text']
-        clean_opener = re.sub(r'[^\w\s]', '', first_sentence)
+        if final_dur >= 15.0:
+            full_text = " ".join(accumulated_text)
+            text_lower = full_text.lower()
+
+            score = 0
+            if any(w in text_lower for w in hook_keywords):
+                score += 3
+            if '?' in full_text or '!' in full_text:
+                score += 2
+            if len(accumulated_text) >= 2:
+                score += 1
+
+            all_segments.append({
+                "start_seconds": round(start_time, 2),
+                "end_seconds": round(final_end, 2),
+                "duration_seconds": int(round(final_dur)),
+                "score": score,
+                "opener": sentences[start_idx]['text'],
+                "full_text": full_text
+            })
+
+        i = j + 1
+
+    if not all_segments:
+        return []
+
+    if is_all_cuts:
+        selected_segments = all_segments
+    else:
+        sorted_segments = sorted(all_segments, key=lambda x: x['score'], reverse=True)
+        selected_segments = []
+        chosen_intervals = []
+        for s in sorted_segments:
+            if len(selected_segments) >= clips_count:
+                break
+            c_start, c_end = s['start_seconds'], s['end_seconds']
+            overlaps = any(not (c_start >= e or c_end <= st) for st, e in chosen_intervals)
+            if not overlaps:
+                selected_segments.append(s)
+                chosen_intervals.append((c_start, c_end))
+
+        selected_segments.sort(key=lambda x: x['start_seconds'])
+
+    shorts = []
+    for idx, s in enumerate(selected_segments):
+        clean_opener = re.sub(r'[\[\]\(\)\{\}\<\>\/\\\|\:\;\*\+\=\_\#\@\$\%\^\&\~]+', ' ', s['opener']).strip()
         opener_words = clean_opener.split()[:5]
         title_slug = " ".join(opener_words).title() if opener_words else "Crucial Insight"
 
         title = f"{title_slug}! 🔥 #Shorts"
-        full_script = " ".join(accumulated_text)
         desc = (
-            f"⚡ {full_script[:180]}...\n\n"
+            f"⚡ {s['full_text'][:180]}...\n\n"
             f"🔔 Enjoyed this video? Drop a LIKE, leave your thoughts in the COMMENTS, and SUBSCRIBE to the channel for more viral shorts! 🚀\n\n"
             f"#Shorts #Viral #Trending #Knowledge #Education"
         )
-        tags = f"Shorts, Viral, Trending, YouTube Shorts, Subscribe, Like, Comment, Insights, Best Moments"
+        tags = "Shorts, Viral, Trending, YouTube Shorts, Subscribe, Like, Comment, Insights, Best Moments"
 
         shorts.append({
-            "start_seconds": start_time,
-            "end_seconds": end_time,
-            "duration_seconds": int(round(actual_duration)),
-            "hook_reason": hook_reason,
+            "start_seconds": s['start_seconds'],
+            "end_seconds": s['end_seconds'],
+            "duration_seconds": s['duration_seconds'],
+            "hook_reason": f"Complete thought ({s['start_seconds']}s - {s['end_seconds']}s) with high viral curiosity & natural finish.",
             "title": title[:95],
             "description": desc,
             "tags": tags
@@ -548,7 +606,11 @@ def generate_fallback_highlights(video_title, total_duration, clips_count, clip_
         ("Epic Moment! 🚀", "Unmissable highlight from this video!"),
     ]
 
-    needed = max(1, min(clips_count, 10))
+    is_all_cuts = (clips_count == 0 or str(clips_count).lower() in ['0', 'all'])
+    if is_all_cuts:
+        needed = max(3, min(12, int(usable_duration // 35)))
+    else:
+        needed = max(1, min(clips_count, 10))
 
     if usable_duration <= target_dur or needed <= 1:
         step = 0.0
@@ -655,11 +717,11 @@ Respond ONLY with valid JSON in this format:
                 shorts = parsed["shorts"]
                 cta_reminder = "\n\n🔔 Enjoyed this? Drop a LIKE, COMMENT your thoughts, and SUBSCRIBE for more daily clips! 🚀"
                 for sh in shorts:
-                    # Enforce strict duration limit on LLM output
+                    # Enforce technical YouTube Shorts duration limit (<= 58s)
                     dur = float(sh.get("duration_seconds", max_duration_pref))
-                    if dur > float(max_duration_pref) + 2.0:
-                        sh["duration_seconds"] = int(max_duration_pref)
-                        sh["end_seconds"] = float(sh["start_seconds"]) + float(max_duration_pref)
+                    if dur > 58.0:
+                        sh["duration_seconds"] = 58
+                        sh["end_seconds"] = float(sh["start_seconds"]) + 58.0
                     if "SUBSCRIBE" not in sh.get("description", "").upper():
                         sh["description"] = (sh.get("description", "") + cta_reminder).strip()
                 return parsed.get("video_summary", "Analyzed by Ollama Gemma"), shorts
@@ -830,7 +892,9 @@ def main():
     user_id = project['user_id']
     source_type = project['source_type']
     clip_duration_pref = project['clip_duration_pref'] or 30
-    clips_count = project['clips_count'] or 3
+    raw_clips_val = project.get('clips_count')
+    is_all_cuts = (raw_clips_val == 0 or str(raw_clips_val).lower() in ['0', 'all', 'none'])
+    clips_count = 0 if is_all_cuts else int(raw_clips_val or 3)
     video_title = project['title'] or "Untitled Video"
     project_mode = project.get('mode', 'dialogue')
 
@@ -949,15 +1013,15 @@ def main():
             is_song=is_song
         )
 
-        if not raw_shorts or len(raw_shorts) < clips_count:
-            print(f"Notice: Primary analysis produced {len(raw_shorts) if raw_shorts else 0} clips (requested {clips_count}). Supplementing highlights.", flush=True)
+        if not raw_shorts or (not is_all_cuts and len(raw_shorts) < clips_count):
+            print(f"Notice: Primary analysis produced {len(raw_shorts) if raw_shorts else 0} clips (requested {'all' if is_all_cuts else clips_count}). Supplementing highlights.", flush=True)
             summary = summary or "High-retention highlights extracted across peak entertainment scenes."
             additional = generate_fallback_highlights(video_title, total_duration, clips_count, clip_duration_pref)
             
             existing_intervals = [(float(s['start_seconds']), float(s['end_seconds'])) for s in (raw_shorts or [])]
             raw_shorts = list(raw_shorts or [])
             for cand in additional:
-                if len(raw_shorts) >= clips_count:
+                if not is_all_cuts and len(raw_shorts) >= clips_count:
                     break
                 c_start, c_end = float(cand['start_seconds']), float(cand['end_seconds'])
                 overlaps = any(not (c_start >= e or c_end <= s) for s, e in existing_intervals)
@@ -966,13 +1030,14 @@ def main():
                     existing_intervals.append((c_start, c_end))
             
             if not raw_shorts or len(raw_shorts) == 0:
-                raw_shorts = additional[:clips_count]
+                raw_shorts = additional if is_all_cuts else additional[:clips_count]
 
         log_progress(args.db_path, project_id, 65, "Rendering vertical shorts with Subscribe CTA...", raw_analysis=summary)
 
         # Step 4: Render Shorts with 9:16 layout & CTA overlay
         generated_shorts_records = []
-        max_duration_cap = 32.0 if clip_duration_pref <= 35 else float(clip_duration_pref)
+        # Allow natural complete phrases up to 58.0s (YouTube Shorts allows up to 60s max!)
+        max_duration_cap = 58.0
 
         for index, item in enumerate(raw_shorts):
             percent = 65 + int((index / len(raw_shorts)) * 25)
@@ -980,8 +1045,8 @@ def main():
             start_s = float(item.get('start_seconds', 0.0))
             dur_s = float(item.get('duration_seconds', clip_duration_pref))
 
-            # STRICT HARD CLAMP:
-            # A short can NEVER exceed max_duration_cap or the total video length!
+            # Smart duration safety:
+            # Complete verses/stanzas allowed up to 58s (never clipped mid-sentence)
             if dur_s > max_duration_cap:
                 dur_s = max_duration_cap
             if start_s + dur_s > total_duration:

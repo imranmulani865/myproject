@@ -15,13 +15,31 @@
         <div class="flex flex-wrap items-center gap-3">
             <a href="{{ route('wallet') }}" class="inline-flex min-h-11 items-center gap-2 px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 font-semibold text-sm hover:bg-amber-100 transition-colors">
                 <i class="fa-solid fa-coins text-amber-600" aria-hidden="true"></i>
-                <span>{{ number_format(auth()->user()->tokens) }} Tokens</span>
+                <span>{{ number_format(auth()->user()->tokens) }} Credits</span>
             </a>
             <a href="{{ route('projects.create') }}" class="inline-flex min-h-11 items-center gap-2 bg-[#FF0000] hover:bg-[#CC0000] text-white font-semibold px-5 py-3 rounded-xl shadow-lg shadow-red-600/30 transition-all transform hover:-translate-y-0.5">
                 <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
                 <span>Create New Shorts</span>
             </a>
         </div>
+    </div>
+
+    <!-- 30-Day Storage Retention Notice Banner -->
+    <div class="p-4 sm:p-5 rounded-3xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs sm:text-sm flex items-start sm:items-center justify-between gap-4 shadow-sm">
+        <div class="flex items-start sm:items-center gap-3.5">
+            <div class="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 text-base">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+            <div>
+                <span class="font-bold text-amber-800 dark:text-amber-300 block text-sm">⏳ Temporary Cloud Storage Notice (30-Day Expiry)</span>
+                <span class="text-xs text-amber-900/80 dark:text-amber-200/80">
+                    Generated video cuts and project MP4 files are safely hosted for <strong>30 days</strong>. Please download your finished shorts to your computer or phone before 30 days expire!
+                </span>
+            </div>
+        </div>
+        <span class="hidden md:inline-flex px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 whitespace-nowrap">
+            Auto-clears after 30d
+        </span>
     </div>
 
     <!-- Quick Stats -->
@@ -113,13 +131,19 @@
                                         {{ $project->created_at->diffForHumans() }}
                                     </span>
                                     <span>•</span>
-                                    <span class="inline-flex items-center gap-1">
+                                    <span class="inline-flex items-center gap-1 font-medium">
                                         <i class="fa-solid fa-scissors"></i>
-                                        {{ $project->clip_duration_pref }}s clips ({{ $project->clips_count }} requested)
+                                        {{ $project->clips_count == 0 ? 'All Possible Cuts' : $project->clips_count . ' clips' }}
                                     </span>
                                     <span>•</span>
                                     <span class="uppercase font-medium text-[10px] px-2 py-0.5 rounded {{ $project->source_type === 'youtube' ? 'bg-red-50 text-red-700' : 'bg-studio-lavender text-brand-700' }}">
                                         {{ $project->source_type }}
+                                    </span>
+                                    <span>•</span>
+                                    @php $remDays = max(0, 30 - $project->created_at->diffInDays(now())); @endphp
+                                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold {{ $remDays <= 5 ? 'text-rose-600' : 'text-amber-600' }}">
+                                        <i class="fa-solid fa-hourglass-half text-[10px]"></i>
+                                        {{ $remDays }}d left
                                     </span>
                                 </div>
 

@@ -23,20 +23,24 @@ class VideoProjectController extends Controller
             'video_file' => ['required_if:source_type,upload', 'nullable', 'file', 'mimes:mp4,mov,avi,mkv,webm', 'max:512000'], // up to 500MB
             'title' => ['nullable', 'string', 'max:255'],
             'clip_duration_pref' => ['required', 'in:30,60'],
-            'clips_count' => ['required', 'integer', 'min:1', 'max:10'],
+            'clips_count' => ['required'],
             'mode' => ['required', 'in:dialogue,song'],
         ]);
 
         $mode = $validated['mode'];
-        $clipsCount = (int) $validated['clips_count'];
-        $tokenRate = ($mode === 'song') ? 15 : 10;
-        $totalTokenCost = $clipsCount * $tokenRate;
+        $clipsCountInput = $validated['clips_count'];
+        $isAllCuts = ($clipsCountInput === 'all' || $clipsCountInput === '0' || $clipsCountInput === 0);
+        $clipsCount = $isAllCuts ? 0 : (int) $clipsCountInput;
+        $clipsCountLabel = $isAllCuts ? 'All Possible Cuts' : "{$clipsCount} Cuts";
+
+        // 1 Video Credit = 1 Full Video Project (Unlimited / All Cuts allowed!)
+        $totalTokenCost = 1;
 
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
         if (! $user->hasTokens($totalTokenCost)) {
-            return back()->withInput()->with('error', "Insufficient Tokens! This project requires {$totalTokenCost} tokens ({$clipsCount} shorts x {$tokenRate} tokens for " . ucfirst($mode) . " Mode), but your wallet only has {$user->tokens} tokens. Please recharge or contact admin.");
+            return back()->withInput()->with('error', "Insufficient Credits! Creating this video project requires 1 Video Credit, but your wallet currently has {$user->tokens} credits. Please recharge your wallet to proceed.");
         }
 
         $sourceType = $validated['source_type'];
@@ -79,14 +83,14 @@ class VideoProjectController extends Controller
             'progress_percent' => 0,
         ]);
 
-        // Deduct tokens from user wallet
-        $user->deductTokens($totalTokenCost, "Shorts Generation: {$clipsCount} clips in " . ucfirst($mode) . " Mode", $project->id);
+        // Deduct 1 credit from user wallet
+        $user->deductTokens($totalTokenCost, "Video Project #{$project->id} ({$clipsCountLabel} in " . ucfirst($mode) . " Mode)", $project->id);
 
         // Dispatch background job to process the video
         ProcessVideoJob::dispatch($project->id);
 
         return redirect()->route('projects.show', $project->id)
-            ->with('success', "Project queued successfully! {$totalTokenCost} tokens deducted from your wallet.");
+            ->with('success', "Project queued successfully! 1 Video Credit used ({$clipsCountLabel}).");
     }
 
     public function show(int $id)

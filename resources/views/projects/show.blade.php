@@ -28,10 +28,10 @@
                 </span>
                 @if($project->tokens_used > 0)
                     <span>•</span>
-                    <span class="text-amber-700 text-xs font-semibold"><i class="fa-solid fa-coins mr-1 text-[10px]"></i>{{ $project->tokens_used }} Tokens</span>
+                    <span class="text-amber-700 text-xs font-semibold"><i class="fa-solid fa-coins mr-1 text-[10px]"></i>1 Video Credit</span>
                 @endif
                 <span>•</span>
-                <span class="text-studio-muted"><i class="fa-regular fa-clock mr-1 text-studio-muted"></i>Target: {{ $project->clip_duration_pref }}s clips</span>
+                <span class="text-studio-muted"><i class="fa-solid fa-scissors mr-1 text-studio-muted"></i>{{ $project->clips_count == 0 ? 'All Possible Cuts' : $project->clips_count . ' Cuts' }}</span>
                 <span>•</span>
                 <span>Total Video: {{ $project->duration_seconds ? sprintf('%02d:%02d', floor($project->duration_seconds / 60), $project->duration_seconds % 60) : 'N/A' }}</span>
                 <span>•</span>
@@ -70,6 +70,25 @@
                 </button>
             </form>
         </div>
+    </div>
+
+    <!-- 30-Day Storage Expiry Notice -->
+    @php
+        $daysLeft = max(0, 30 - $project->created_at->diffInDays(now()));
+        $expiryDate = $project->created_at->addDays(30)->format('M d, Y');
+    @endphp
+    <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs sm:text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+        <div class="flex items-center gap-3">
+            <i class="fa-solid fa-clock-rotate-left text-amber-600 dark:text-amber-400 text-lg shrink-0"></i>
+            <div>
+                <span class="font-bold text-amber-800 dark:text-amber-300">⏳ 30-Day Temporary Cloud Storage:</span>
+                <span>All video clips are stored for 30 days and will expire on <strong>{{ $expiryDate }}</strong>. Please download your shorts!</span>
+            </div>
+        </div>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold {{ $daysLeft <= 5 ? 'bg-red-500 text-white' : 'bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30' }} self-start sm:self-auto whitespace-nowrap">
+            <i class="fa-solid fa-hourglass-half"></i>
+            {{ $daysLeft }} Days Remaining
+        </span>
     </div>
 
     <!-- Active Processing Live Status Card -->

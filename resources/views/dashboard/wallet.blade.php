@@ -199,33 +199,73 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
             <div>
                 <h2 class="text-xl font-black text-white flex items-center gap-2">
-                    <i class="fa-solid fa-tag text-indigo-400"></i>
-                    <span>Token Recharge Packs</span>
+                    <i class="fa-solid fa-coins text-amber-400"></i>
+                    <span>Video Credit Recharge Packs</span>
                 </h2>
-                <p class="text-xs text-slate-400">Instant activation via Razorpay (UPI, Credit/Debit Card, NetBanking) or Manual UPI.</p>
+                <p class="text-xs text-slate-400">
+                    <strong>1 Video Credit = 1 Full Video</strong> (Generate 1, 3, 5, or <strong>All Possible Cuts</strong> from each video!).
+                </p>
             </div>
             <div class="flex items-center gap-2">
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 text-xs font-semibold">
                     <i class="fa-solid fa-shield-halved text-[10px]"></i>
-                    Razorpay Secure 256-bit SSL
+                    Razorpay Secure (UPI • Cards • NetBanking)
                 </span>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Starter -->
+        <!-- 30-Day Storage Notice -->
+        <div class="mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-3">
+            <i class="fa-solid fa-clock-rotate-left text-amber-400 text-base shrink-0"></i>
+            <div>
+                <strong class="font-bold">Cloud Storage Period:</strong> All rendered video cuts and project assets remain stored on our servers for <strong>30 days</strong>. Please download your final MP4 files before 30 days expire!
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- 1. Trial: Rs 99 - 3 Credits -->
             <div class="rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 p-6 transition flex flex-col justify-between group">
                 <div>
                     <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300">Starter</span>
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300">Mini Trial</span>
+                        <span class="text-2xl font-black text-white">₹99</span>
+                    </div>
+                    <div class="text-2xl font-extrabold text-amber-400 mb-1">3 Video Credits</div>
+                    <p class="text-xs text-slate-400 mb-4">Try 3 full videos with unlimited stanzas and cuts.</p>
+                    <ul class="text-xs text-slate-300 space-y-2 mb-6">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> <strong>3 Videos</strong> (Any length)</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> All Possible Cuts per video</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> 1080x1920 HD with blurred background</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Auto Subscribe & Like outro</li>
+                    </ul>
+                </div>
+                <div class="space-y-2">
+                    <button type="button" @click="initiatePayment('trial')" :disabled="loading"
+                            class="w-full py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-extrabold transition shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bolt text-amber-300"></i>
+                        <span>Pay ₹99 with Razorpay</span>
+                    </button>
+                    <button type="button" @click="rechargeModal = true"
+                            class="w-full py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-slate-200 text-[11px] font-semibold transition border border-slate-800">
+                        Pay via Manual UPI QR
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. Starter: Rs 299 - 10 Credits -->
+            <div class="rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 p-6 transition flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300">Starter Pack</span>
                         <span class="text-2xl font-black text-white">₹299</span>
                     </div>
-                    <div class="text-2xl font-extrabold text-amber-400 mb-1">100 Tokens</div>
-                    <p class="text-xs text-slate-400 mb-4">Great for test-running your next 10-15 viral reels.</p>
+                    <div class="text-2xl font-extrabold text-amber-400 mb-1">10 Video Credits</div>
+                    <p class="text-xs text-slate-400 mb-4">Ideal for test-running your next 10 videos.</p>
                     <ul class="text-xs text-slate-300 space-y-2 mb-6">
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> 10 Dialogue Shorts or ~7 Song Shorts</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> 1080x1920 HD rendering</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Auto subscribe CTA overlay</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> <strong>10 Full Videos</strong></li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Unlimited shorts & cuts per video</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Dialogue & Song Mode access</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Smart Natural Boundary detection</li>
                     </ul>
                 </div>
                 <div class="space-y-2">
@@ -241,7 +281,7 @@
                 </div>
             </div>
 
-            <!-- Pro Creator (Popular) -->
+            <!-- 3. Pro Creator: Rs 499 - 20 Credits (Most Popular) -->
             <div class="relative rounded-2xl bg-gradient-to-b from-indigo-950/60 to-slate-900 border-2 border-indigo-500/80 p-6 shadow-xl shadow-indigo-500/10 flex flex-col justify-between">
                 <span class="absolute -top-3 right-6 bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full shadow-md">
                     Most Popular
@@ -249,21 +289,22 @@
                 <div>
                     <div class="flex items-center justify-between mb-3">
                         <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Pro Creator</span>
-                        <span class="text-2xl font-black text-white">₹799</span>
+                        <span class="text-2xl font-black text-white">₹499</span>
                     </div>
-                    <div class="text-2xl font-extrabold text-amber-400 mb-1">350 Tokens</div>
-                    <p class="text-xs text-indigo-200/80 mb-4">Best value for active content creators & YouTubers.</p>
+                    <div class="text-2xl font-extrabold text-amber-400 mb-1">20 Video Credits</div>
+                    <p class="text-xs text-indigo-200/80 mb-4">Best value for active creators & YouTubers.</p>
                     <ul class="text-xs text-slate-200 space-y-2 mb-6">
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> 35 Dialogue Shorts or ~23 Song Shorts</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> <strong>20 Full Videos</strong></li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Unlimited stanzas & shorts per video</li>
                         <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Priority queue processing</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Mukhda & Chorus high-energy detection</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Mukhda & Chorus peak detection</li>
                     </ul>
                 </div>
                 <div class="space-y-2">
                     <button type="button" @click="initiatePayment('pro')" :disabled="loading"
                             class="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-600 hover:from-indigo-600 hover:to-pink-700 text-white text-xs font-extrabold transition shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2">
                         <i class="fa-solid fa-bolt text-amber-300"></i>
-                        <span>Pay ₹799 with Razorpay</span>
+                        <span>Pay ₹499 with Razorpay</span>
                     </button>
                     <button type="button" @click="rechargeModal = true"
                             class="w-full py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-slate-200 text-[11px] font-semibold transition border border-slate-800">
@@ -272,31 +313,90 @@
                 </div>
             </div>
 
-            <!-- Agency -->
+            <!-- 4. Agency Scale: Rs 999 - 50 Credits -->
             <div class="rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 p-6 transition flex flex-col justify-between group">
                 <div>
                     <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300">Agency Pack</span>
-                        <span class="text-2xl font-black text-white">₹1,999</span>
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300">Agency Scale</span>
+                        <span class="text-2xl font-black text-white">₹999</span>
                     </div>
-                    <div class="text-2xl font-extrabold text-amber-400 mb-1">1,000 Tokens</div>
-                    <p class="text-xs text-slate-400 mb-4">For digital marketing agencies & video editing studios.</p>
+                    <div class="text-2xl font-extrabold text-amber-400 mb-1">50 Video Credits</div>
+                    <p class="text-xs text-slate-400 mb-4">For digital marketing agencies & video studios.</p>
                     <ul class="text-xs text-slate-300 space-y-2 mb-6">
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> 100 Dialogue Shorts or ~66 Song Shorts</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Lowest cost per short (~₹1.99 / short)</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> VIP priority queue</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> <strong>50 Full Videos</strong></li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> All Possible Cuts per video (~300+ shorts!)</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Just ₹19.98 per full video</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> VIP high-speed queue</li>
                     </ul>
                 </div>
                 <div class="space-y-2">
                     <button type="button" @click="initiatePayment('agency')" :disabled="loading"
                             class="w-full py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-extrabold transition shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2">
                         <i class="fa-solid fa-bolt text-amber-300"></i>
-                        <span>Pay ₹1,999 with Razorpay</span>
+                        <span>Pay ₹999 with Razorpay</span>
                     </button>
                     <button type="button" @click="rechargeModal = true"
                             class="w-full py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-slate-200 text-[11px] font-semibold transition border border-slate-800">
                         Pay via Manual UPI QR
                     </button>
+                </div>
+            </div>
+
+            <!-- 5. Mega Enterprise: Rs 4999 - 1,000 Credits -->
+            <div class="rounded-2xl bg-gradient-to-b from-amber-950/40 via-slate-900 to-slate-900 border border-amber-500/40 hover:border-amber-500 p-6 transition flex flex-col justify-between group shadow-xl">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">Mega Enterprise</span>
+                        <span class="text-2xl font-black text-white">₹4,999</span>
+                    </div>
+                    <div class="text-2xl font-extrabold text-amber-400 mb-1">1,000 Video Credits</div>
+                    <p class="text-xs text-slate-400 mb-4">Massive scale for media production houses.</p>
+                    <ul class="text-xs text-slate-300 space-y-2 mb-6">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> <strong>1,000 Full Videos</strong></li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> Unlimited cuts (generate thousands of shorts!)</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> Just ₹4.99 per full video project</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> Dedicated worker priority</li>
+                    </ul>
+                </div>
+                <div class="space-y-2">
+                    <button type="button" @click="initiatePayment('mega')" :disabled="loading"
+                            class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-slate-950 text-xs font-black transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bolt text-slate-950"></i>
+                        <span>Pay ₹4,999 with Razorpay</span>
+                    </button>
+                    <button type="button" @click="rechargeModal = true"
+                            class="w-full py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-slate-200 text-[11px] font-semibold transition border border-slate-800">
+                        Pay via Manual UPI QR
+                    </button>
+                </div>
+            </div>
+
+            <!-- 6. Custom Enterprise: Contact for > 1,000 Credits -->
+            <div class="rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 p-6 transition flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300">Custom High Volume</span>
+                        <span class="text-xl font-bold text-slate-300">Custom Deal</span>
+                    </div>
+                    <div class="text-2xl font-extrabold text-white mb-1">> 1,000 Credits</div>
+                    <p class="text-xs text-slate-400 mb-4">Need higher volumes, automated API webhooks, or dedicated private GPU servers?</p>
+                    <ul class="text-xs text-slate-300 space-y-2 mb-6">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Custom credit packs (5,000+ videos)</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Direct API integration</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Custom watermark & intro/outro branding</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Dedicated 24/7 account manager</li>
+                    </ul>
+                </div>
+                <div class="space-y-2">
+                    <a href="https://wa.me/919999999999?text=Hi%2C%20I%20need%20custom%20high-volume%20credits%20for%20AI%20Shorts%20Creator" target="_blank"
+                       class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold transition shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 text-center block">
+                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                        <span>Contact Us on WhatsApp</span>
+                    </a>
+                    <a href="mailto:support@shortcreator.ai?subject=Enterprise%20Volume%20Inquiry"
+                       class="w-full py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white text-[11px] font-semibold transition border border-slate-800 text-center block">
+                        Email Enterprise Team
+                    </a>
                 </div>
             </div>
         </div>

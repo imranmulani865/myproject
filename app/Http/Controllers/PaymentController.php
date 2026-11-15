@@ -14,23 +14,35 @@ use Illuminate\Support\Facades\Log;
 class PaymentController extends Controller
 {
     public const PLANS = [
+        'trial' => [
+            'name' => 'Trial Pack',
+            'amount' => 9900, // Rs 99
+            'tokens' => 3,
+            'description' => '3 Video Credits (3 Full Videos - Unlimited Cuts)',
+        ],
         'starter' => [
             'name' => 'Starter Pack',
             'amount' => 29900, // Rs 299
-            'tokens' => 100,
-            'description' => '100 Tokens (~10 Dialogue or 7 Song Shorts)',
+            'tokens' => 10,
+            'description' => '10 Video Credits (10 Full Videos - Unlimited Cuts)',
         ],
         'pro' => [
-            'name' => 'Pro Creator Pack',
-            'amount' => 79900, // Rs 799
-            'tokens' => 350,
-            'description' => '350 Tokens (~35 Dialogue or 23 Song Shorts)',
+            'name' => 'Creator Pack',
+            'amount' => 49900, // Rs 499
+            'tokens' => 20,
+            'description' => '20 Video Credits (20 Full Videos - Unlimited Cuts)',
         ],
         'agency' => [
-            'name' => 'Agency Pack',
-            'amount' => 199900, // Rs 1,999
+            'name' => 'Agency Scale',
+            'amount' => 99900, // Rs 999
+            'tokens' => 50,
+            'description' => '50 Video Credits (50 Full Videos - Unlimited Cuts)',
+        ],
+        'mega' => [
+            'name' => 'Mega Enterprise',
+            'amount' => 499900, // Rs 4,999
             'tokens' => 1000,
-            'description' => '1,000 Tokens (~100 Dialogue or 66 Song Shorts)',
+            'description' => '1,000 Video Credits (1,000 Full Videos - Unlimited Cuts)',
         ],
     ];
 
@@ -44,7 +56,7 @@ class PaymentController extends Controller
     public function createOrder(Request $request): JsonResponse
     {
         $request->validate([
-            'plan_id' => 'required|string|in:starter,pro,agency',
+            'plan_id' => 'required|string|in:trial,starter,pro,agency,mega',
         ]);
 
         $planId = $request->input('plan_id');

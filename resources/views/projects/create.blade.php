@@ -59,7 +59,7 @@
                     <label class="block text-sm font-semibold text-studio-ink">
                         Processing mode <span class="text-rose-700">*</span>
                     </label>
-                    <span class="text-xs text-studio-muted">Tokens vary by mode</span>
+                    <span class="text-xs text-studio-muted">1 Video Credit per project</span>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -76,7 +76,7 @@
                                         <span class="font-bold text-studio-ink text-sm">Dialogue / Podcast</span>
                                     </div>
                                     <span class="px-2 py-0.5 rounded text-xs font-semibold bg-studio-surface text-brand-700 border border-brand-200">
-                                        10 Tokens/short
+                                        1 Credit / Video
                                     </span>
                                 </div>
                                 <p class="text-sm text-studio-muted mt-2">
@@ -103,7 +103,7 @@
                                         <span class="font-bold text-studio-ink text-sm">Song / Music Video</span>
                                     </div>
                                     <span class="px-2 py-0.5 rounded text-xs font-semibold bg-pink-50 text-pink-700 border border-pink-200">
-                                        15 Tokens/short
+                                        1 Credit / Video
                                     </span>
                                 </div>
                                 <p class="text-sm text-studio-muted mt-2">
@@ -233,36 +233,40 @@
                     <label for="clips_count" class="block text-sm font-semibold text-studio-ink mb-2">
                         Number of shorts
                     </label>
-                    <select id="clips_count" name="clips_count" x-model.number="clipsCount"
+                    <select id="clips_count" name="clips_count" x-model="clipsCount"
                             class="w-full px-4 py-3 bg-studio-canvas border border-studio-line rounded-xl text-studio-ink text-sm focus:outline-none focus:ring-2 focus:ring-brand-400/30 focus:border-brand-500">
                         <option value="1">1 Short (Top Best Moment)</option>
                         <option value="2">2 Shorts</option>
                         <option value="3" selected>3 Shorts (Recommended)</option>
-                        <option value="5">5 Shorts (Maximum Coverage)</option>
+                        <option value="5">5 Shorts (Deep Coverage)</option>
+                        <option value="all">🔥 All Possible Cuts (Auto Full Video Scan - All Shorts!)</option>
                     </select>
+                    <span class="block text-[11px] text-brand-600 dark:text-brand-400 mt-1 font-medium">
+                        ✨ Full video analyzed for natural stanzas. 1 Credit covers all shorts!
+                    </span>
                 </div>
             </div>
 
-            <!-- DYNAMIC TOKEN ESTIMATOR BOX -->
+            <!-- DYNAMIC CREDIT ESTIMATOR BOX -->
             <div class="p-5 rounded-2xl bg-studio-canvas border border-studio-line">
                 <div class="flex items-center justify-between gap-3 mb-3 pb-3 border-b border-studio-line">
                     <span class="text-sm font-semibold text-studio-ink flex items-center gap-2">
-                        <i class="fa-solid fa-calculator text-brand-600"></i>
-                        Token Cost Calculator
+                        <i class="fa-solid fa-coins text-amber-500"></i>
+                        Video Credits Summary
                     </span>
-                    <span class="text-xs font-medium text-studio-muted">
-                        Rate: <strong class="text-studio-ink" x-text="mode === 'song' ? '15 Tokens / short' : '10 Tokens / short'"></strong>
+                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+                        Fixed: 1 Credit / Video (Unlimited Cuts)
                     </span>
                 </div>
 
                 <div class="grid grid-cols-3 gap-3 text-center">
                     <div class="bg-studio-surface p-2.5 rounded-xl border border-studio-line">
-                        <span class="block text-xs font-semibold text-studio-muted">Your wallet</span>
-                        <span class="text-sm font-bold text-studio-ink" x-text="userTokens + ' Tokens'"></span>
+                        <span class="block text-xs font-semibold text-studio-muted">Your Wallet</span>
+                        <span class="text-sm font-bold text-studio-ink" x-text="userTokens + ' Credits'"></span>
                     </div>
                     <div class="bg-studio-lavender/60 p-2.5 rounded-xl border border-brand-200">
-                        <span class="block text-xs font-semibold text-brand-700">Project cost</span>
-                        <span class="text-sm font-bold text-studio-ink" x-text="tokenCost + ' Tokens'"></span>
+                        <span class="block text-xs font-semibold text-brand-700">Project Cost</span>
+                        <span class="text-sm font-bold text-studio-ink">1 Video Credit</span>
                     </div>
                     <div :class="remainingTokens >= 0 ? 'bg-emerald-50 border-emerald-200' : 'bg-rose-50 border-rose-200'"
                          class="p-2.5 rounded-xl border">
@@ -270,15 +274,15 @@
                             Remaining
                         </span>
                         <span class="text-sm font-bold" :class="remainingTokens >= 0 ? 'text-emerald-800' : 'text-rose-800'"
-                              x-text="remainingTokens + ' Tokens'"></span>
+                              x-text="remainingTokens + ' Credits'"></span>
                     </div>
                 </div>
 
-                <!-- Insufficient Token Alert -->
+                <!-- Insufficient Credit Alert -->
                 <div x-cloak x-show="!canSubmit" class="mt-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-triangle-exclamation text-rose-700 text-base"></i>
-                        <span>Insufficient Tokens! You need <strong x-text="tokenCost"></strong> tokens, but your wallet only has <strong x-text="userTokens"></strong> tokens.</span>
+                        <span>Insufficient Credits! You need 1 Video Credit, but your wallet has 0 credits.</span>
                     </div>
                     <a href="{{ route('wallet') }}" class="inline-flex min-h-10 items-center px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm whitespace-nowrap transition-colors">
                         Recharge Now
@@ -286,12 +290,21 @@
                 </div>
             </div>
 
-            <!-- Notice Banner -->
-            <div class="p-4 rounded-2xl bg-studio-lavender/60 border border-brand-200 text-studio-muted text-xs flex items-start gap-3">
-                <i class="fa-solid fa-shield-halved text-base text-brand-600 mt-0.5"></i>
-                <div class="space-y-1">
-                    <p class="font-semibold text-studio-ink">Natural cuts, token refunds, and subscribe outro</p>
-                    <p class="text-studio-muted">Ollama Gemma cuts dialogue near sentence pauses and finds music peaks. If processing fails, tokens are automatically refunded. Each short includes a Subscribe & Like outro.</p>
+            <!-- Smart Cut Perfection & 30-Day Storage Notice Banner -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="p-3.5 rounded-2xl bg-studio-lavender/60 border border-brand-200 text-studio-muted text-xs flex items-start gap-2.5">
+                    <i class="fa-solid fa-wand-magic-sparkles text-sm text-brand-600 mt-0.5 shrink-0"></i>
+                    <div>
+                        <span class="font-semibold text-studio-ink block">Smart Sentence & Lyric Perfection</span>
+                        <span class="text-[11px] text-studio-muted">Cuts dynamically expand (18s-55s) to guarantee lines & verses complete naturally without being cut mid-word!</span>
+                    </div>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-studio-muted text-xs flex items-start gap-2.5">
+                    <i class="fa-solid fa-clock-rotate-left text-sm text-amber-600 dark:text-amber-400 mt-0.5 shrink-0"></i>
+                    <div>
+                        <span class="font-semibold text-amber-800 dark:text-amber-300 block">30-Day Cloud Storage</span>
+                        <span class="text-[11px] text-amber-900/80 dark:text-amber-200/80">Generated shorts are hosted for 30 days. Download your MP4 files to keep them permanently!</span>
+                    </div>
                 </div>
             </div>
 
@@ -301,7 +314,7 @@
                 <template x-if="!isSubmitting">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-wand-magic-sparkles"></i>
-                        <span x-text="canSubmit ? 'Create shorts (' + tokenCost + ' Tokens)' : 'Insufficient Tokens - Please Recharge'"></span>
+                        <span x-text="canSubmit ? 'Generate Shorts (1 Video Credit)' : 'Insufficient Credits - Please Recharge'"></span>
                     </div>
                 </template>
                 <template x-if="isSubmitting">
@@ -323,16 +336,15 @@ function createProjectForm() {
         selectedFile: null,
         isSubmitting: false,
         mode: 'dialogue',
-        clipsCount: 3,
+        clipsCount: '3',
         userTokens: {{ auth()->user()->tokens }},
 
         get tokenCost() {
-            const rate = (this.mode === 'song') ? 15 : 10;
-            return this.clipsCount * rate;
+            return 1;
         },
 
         get remainingTokens() {
-            return this.userTokens - this.tokenCost;
+            return this.userTokens - 1;
         },
 
         get canSubmit() {

@@ -523,82 +523,119 @@
         </div>
     </section>
 
-    <!-- TOKEN PRICING PACKS WITH RAZORPAY -->
+    <!-- VIDEO CREDIT PRICING PACKS WITH RAZORPAY -->
     <section id="pricing" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div class="text-center max-w-3xl mx-auto mb-14">
             <span class="text-xs font-black uppercase tracking-widest text-red-500">Simple Transparent Pricing</span>
             <h2 class="text-3xl sm:text-4xl font-black text-white mt-1">
-                Choose Your Token Recharge Pack
+                Choose Your Video Credit Pack
             </h2>
             <p class="text-xs sm:text-sm text-neutral-400 mt-2">
-                Pay per short with instant UPI / Card recharge via Razorpay. No monthly subscription trap.
+                <strong>1 Video Credit = 1 Full Video</strong>. Generate unlimited stanzas, 1, 3, 5, or <strong>All Possible Cuts</strong> per video!
             </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            <!-- Starter -->
-            <div class="rounded-3xl bg-[#171717] border border-[#272727] p-8 flex flex-col justify-between">
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-5 max-w-6xl mx-auto">
+            <!-- 1. Trial: Rs 99 -->
+            <div class="rounded-3xl bg-[#171717] border border-[#272727] p-6 flex flex-col justify-between hover:border-[#383838] transition">
                 <div>
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-xs font-extrabold uppercase px-3 py-1 rounded-full bg-[#272727] text-neutral-300">Starter</span>
-                        <div class="text-3xl font-black text-white">₹299</div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-[#272727] text-neutral-300">Trial</span>
+                        <div class="text-2xl font-black text-white">₹99</div>
                     </div>
-                    <div class="text-2xl font-black text-amber-400 mb-2">100 Tokens</div>
-                    <p class="text-xs text-neutral-400 mb-6">Perfect for trying out your next 10-15 viral reels.</p>
-                    <ul class="text-xs text-neutral-300 space-y-2.5 mb-8">
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> 10 Dialogue Shorts or ~7 Song Shorts</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> 1080x1920 Full HD Render</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Animated Subtitles & SFX</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> YouTube Studio SEO copy kit</li>
+                    <div class="text-xl font-black text-amber-400 mb-1">3 Credits</div>
+                    <p class="text-[11px] text-neutral-400 mb-4">3 Full Videos (Unlimited Shorts).</p>
+                    <ul class="text-[11px] text-neutral-300 space-y-2 mb-6">
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-[10px]"></i> 3 Full Videos</li>
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-[10px]"></i> All Possible Cuts</li>
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-[10px]"></i> 1080x1920 HD</li>
                     </ul>
                 </div>
-                <a href="{{ route('wallet') }}" class="w-full py-3 rounded-xl bg-[#272727] hover:bg-[#333] text-white text-xs font-extrabold transition text-center block border border-[#3a3a3a]">
+                <a href="{{ route('wallet') }}" class="w-full py-2.5 rounded-xl bg-[#272727] hover:bg-[#333] text-white text-xs font-bold transition text-center block border border-[#3a3a3a]">
+                    Recharge ₹99
+                </a>
+            </div>
+
+            <!-- 2. Starter: Rs 299 -->
+            <div class="rounded-3xl bg-[#171717] border border-[#272727] p-6 flex flex-col justify-between hover:border-[#383838] transition">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-[#272727] text-neutral-300">Starter</span>
+                        <div class="text-2xl font-black text-white">₹299</div>
+                    </div>
+                    <div class="text-xl font-black text-amber-400 mb-1">10 Credits</div>
+                    <p class="text-[11px] text-neutral-400 mb-4">10 Full Videos (Unlimited Shorts).</p>
+                    <ul class="text-[11px] text-neutral-300 space-y-2 mb-6">
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-[10px]"></i> 10 Full Videos</li>
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-[10px]"></i> Unlimited cuts per video</li>
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-[10px]"></i> Smart Boundary cut</li>
+                    </ul>
+                </div>
+                <a href="{{ route('wallet') }}" class="w-full py-2.5 rounded-xl bg-[#272727] hover:bg-[#333] text-white text-xs font-bold transition text-center block border border-[#3a3a3a]">
                     Recharge ₹299
                 </a>
             </div>
 
-            <!-- Pro (Most Popular) -->
-            <div class="relative rounded-3xl bg-gradient-to-b from-[#241212] via-[#1a1414] to-[#141414] border-2 border-red-500 p-8 shadow-2xl shadow-red-600/20 flex flex-col justify-between">
-                <span class="absolute -top-3.5 right-6 bg-[#FF0000] text-white text-[10px] font-black uppercase tracking-wider px-3.5 py-1 rounded-full shadow-lg">
-                    Most Popular
+            <!-- 3. Pro Creator: Rs 499 (Most Popular) -->
+            <div class="relative rounded-3xl bg-gradient-to-b from-[#2a1313] via-[#1a1414] to-[#141414] border-2 border-red-500 p-6 shadow-2xl shadow-red-600/20 flex flex-col justify-between">
+                <span class="absolute -top-3 right-4 bg-[#FF0000] text-white text-[9px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-lg">
+                    Popular
                 </span>
                 <div>
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-xs font-extrabold uppercase px-3 py-1 rounded-full bg-red-600/30 text-red-300 border border-red-500/40">Pro Creator</span>
-                        <div class="text-3xl font-black text-white">₹799</div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-red-600/30 text-red-300 border border-red-500/40">Pro</span>
+                        <div class="text-2xl font-black text-white">₹499</div>
                     </div>
-                    <div class="text-2xl font-black text-amber-400 mb-2">350 Tokens</div>
-                    <p class="text-xs text-red-200/80 mb-6">Best value for active YouTubers & digital creators.</p>
-                    <ul class="text-xs text-neutral-200 space-y-2.5 mb-8">
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> 35 Dialogue Shorts or ~23 Song Shorts</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Priority queue processing</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Peak Mukhda & Chorus high energy detector</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> 16:9 Long Format + 9:16 Vertical support</li>
+                    <div class="text-xl font-black text-amber-400 mb-1">20 Credits</div>
+                    <p class="text-[11px] text-red-200/80 mb-4">20 Full Videos (~100+ shorts).</p>
+                    <ul class="text-[11px] text-neutral-200 space-y-2 mb-6">
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-[10px]"></i> 20 Full Videos</li>
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-[10px]"></i> Peak Mukhda detection</li>
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-[10px]"></i> Priority queue</li>
                     </ul>
                 </div>
-                <a href="{{ route('wallet') }}" class="w-full py-3.5 rounded-xl bg-[#FF0000] hover:bg-[#CC0000] text-white text-xs font-black transition text-center block shadow-lg shadow-red-600/40">
-                    Recharge ₹799 with Razorpay
+                <a href="{{ route('wallet') }}" class="w-full py-2.5 rounded-xl bg-[#FF0000] hover:bg-[#CC0000] text-white text-xs font-black transition text-center block shadow-lg shadow-red-600/40">
+                    Recharge ₹499
                 </a>
             </div>
 
-            <!-- Agency -->
-            <div class="rounded-3xl bg-[#171717] border border-[#272727] p-8 flex flex-col justify-between">
+            <!-- 4. Agency Scale: Rs 999 -->
+            <div class="rounded-3xl bg-[#171717] border border-[#272727] p-6 flex flex-col justify-between hover:border-[#383838] transition">
                 <div>
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-xs font-extrabold uppercase px-3 py-1 rounded-full bg-[#272727] text-neutral-300">Agency</span>
-                        <div class="text-3xl font-black text-white">₹1,999</div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-[#272727] text-neutral-300">Agency</span>
+                        <div class="text-2xl font-black text-white">₹999</div>
                     </div>
-                    <div class="text-2xl font-black text-amber-400 mb-2">1,000 Tokens</div>
-                    <p class="text-xs text-neutral-400 mb-6">For editing studios, marketing agencies & media teams.</p>
-                    <ul class="text-xs text-neutral-300 space-y-2.5 mb-8">
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> 100 Dialogue Shorts or ~66 Song Shorts</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Lowest cost per short (~₹1.99 / short)</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> VIP Instant Queue</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Admin priority support</li>
+                    <div class="text-xl font-black text-amber-400 mb-1">50 Credits</div>
+                    <p class="text-[11px] text-neutral-400 mb-4">50 Full Videos (~300+ shorts).</p>
+                    <ul class="text-[11px] text-neutral-300 space-y-2 mb-6">
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-[10px]"></i> 50 Full Videos</li>
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-[10px]"></i> Just ₹19.98 per video</li>
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-[10px]"></i> VIP Instant Queue</li>
                     </ul>
                 </div>
-                <a href="{{ route('wallet') }}" class="w-full py-3 rounded-xl bg-[#272727] hover:bg-[#333] text-white text-xs font-extrabold transition text-center block border border-[#3a3a3a]">
-                    Recharge ₹1,999
+                <a href="{{ route('wallet') }}" class="w-full py-2.5 rounded-xl bg-[#272727] hover:bg-[#333] text-white text-xs font-bold transition text-center block border border-[#3a3a3a]">
+                    Recharge ₹999
+                </a>
+            </div>
+
+            <!-- 5. Mega Enterprise: Rs 4999 -->
+            <div class="rounded-3xl bg-gradient-to-b from-[#241d13] to-[#171717] border border-amber-500/40 p-6 flex flex-col justify-between hover:border-amber-500 transition">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">Enterprise</span>
+                        <div class="text-2xl font-black text-white">₹4,999</div>
+                    </div>
+                    <div class="text-xl font-black text-amber-400 mb-1">1,000 Credits</div>
+                    <p class="text-[11px] text-neutral-400 mb-4">1,000 Full Videos at ₹4.99/vid.</p>
+                    <ul class="text-[11px] text-neutral-300 space-y-2 mb-6">
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-amber-400 text-[10px]"></i> 1,000 Full Videos</li>
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-amber-400 text-[10px]"></i> Thousands of shorts</li>
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-amber-400 text-[10px]"></i> Dedicated priority</li>
+                    </ul>
+                </div>
+                <a href="{{ route('wallet') }}" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-slate-950 text-xs font-black transition text-center block shadow-lg shadow-amber-500/20">
+                    Recharge ₹4,999
                 </a>
             </div>
         </div>
