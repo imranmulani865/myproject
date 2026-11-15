@@ -112,7 +112,7 @@
         }
 
         /* ===================================================
-           YOUTUBE 3D CREATOR BOOK OPENING (With Proper Images & 3s Hold)
+           YOUTUBE 3D CREATOR BOOK OPENING (With Proper Images & 2s Hold)
            =================================================== */
         .book-opening-stage {
             position: fixed;
@@ -126,7 +126,7 @@
             justify-content: center;
             perspective: 1600px;
             perspective-origin: center center;
-            animation: book-stage-vanish 0.45s ease 4.2s forwards;
+            animation: book-stage-vanish 0.45s ease 3.15s forwards;
             background: #0f0f0f;
             cursor: pointer;
         }
@@ -167,7 +167,7 @@
             align-items: center;
             justify-content: flex-end;
             padding-right: 4vw;
-            animation: book-swing-left 1.15s cubic-bezier(0.25, 1, 0.35, 1) 3.0s forwards;
+            animation: book-swing-left 1.1s cubic-bezier(0.25, 1, 0.35, 1) 2.0s forwards;
             will-change: transform;
         }
 
@@ -187,7 +187,7 @@
             align-items: center;
             justify-content: flex-start;
             padding-left: 4vw;
-            animation: book-swing-right 1.15s cubic-bezier(0.25, 1, 0.35, 1) 3.0s forwards;
+            animation: book-swing-right 1.1s cubic-bezier(0.25, 1, 0.35, 1) 2.0s forwards;
             will-change: transform;
         }
 
@@ -214,7 +214,7 @@
             position: relative;
         }
 
-        /* Center Spine Laser Glow during 3s hold and burst */
+        /* Center Spine Laser Glow during 2s hold and burst */
         .book-spine-glow {
             position: absolute;
             top: 0;
@@ -226,7 +226,7 @@
             box-shadow: 0 0 35px #ff0000, 0 0 70px #cc0000;
             z-index: 20;
             pointer-events: none;
-            animation: spine-pulse-hold 4.2s ease-out forwards;
+            animation: spine-pulse-hold 3.15s ease-out forwards;
         }
 
         @keyframes spine-pulse-hold {
@@ -302,7 +302,7 @@
             background: linear-gradient(90deg, #ff0000 0%, #ff4e45 40%, #ff0000 80%, #cc0000 100%);
             background-size: 200% 100%;
             box-shadow: 0 0 16px rgba(255, 0, 0, 0.95), 0 0 30px rgba(255, 78, 69, 0.6);
-            animation: laser-sweep 0.85s cubic-bezier(0.4, 0, 0.2, 1) 3.1s forwards;
+            animation: laser-sweep 0.85s cubic-bezier(0.4, 0, 0.2, 1) 2.1s forwards;
         }
 
         @keyframes laser-sweep {
@@ -313,7 +313,7 @@
         }
 
         .site-opening-reveal {
-            animation: page-cinematic-enter 0.9s cubic-bezier(0.16, 1, 0.3, 1) 3.1s forwards;
+            animation: page-cinematic-enter 0.9s cubic-bezier(0.16, 1, 0.3, 1) 2.1s forwards;
             will-change: transform, opacity, filter;
         }
 
@@ -331,7 +331,7 @@
         }
 
         .site-nav-enter {
-            animation: nav-slide-down 0.8s cubic-bezier(0.16, 1, 0.3, 1) 3.1s forwards;
+            animation: nav-slide-down 0.8s cubic-bezier(0.16, 1, 0.3, 1) 2.1s forwards;
         }
 
         @keyframes nav-slide-down {
@@ -340,7 +340,7 @@
         }
 
         .ambient-glow-bloom {
-            animation: aura-bloom 1.2s cubic-bezier(0.16, 1, 0.3, 1) 3.0s forwards;
+            animation: aura-bloom 1.2s cubic-bezier(0.16, 1, 0.3, 1) 2.0s forwards;
         }
 
         @keyframes aura-bloom {
@@ -439,7 +439,7 @@
         <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
             <button type="button" onclick="openBookNow()" class="px-5 py-2 rounded-full bg-[#0F0F0F]/90 hover:bg-[#272727] text-white text-xs font-bold backdrop-blur border border-red-500/40 shadow-[0_4px_25px_rgba(255,0,0,0.35)] transition transform hover:scale-105 cursor-pointer flex items-center gap-2">
                 <i class="fa-brands fa-youtube text-[#FF0000] text-sm"></i>
-                <span>Opening Studio in 3s...</span>
+                <span>Opening Studio in 2s...</span>
                 <span class="text-red-400 text-[11px] font-bold">| Skip ➔</span>
             </button>
         </div>
@@ -655,7 +655,7 @@
         setTimeout(() => {
             const stage = document.getElementById('book-opening-stage');
             if (stage) stage.remove();
-        }, 4800);
+        }, 3500);
     </script>
 </body>
 </html>
