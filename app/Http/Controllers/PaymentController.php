@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Notification;
+use App\Models\AppNotification;
 use App\Models\PaymentOrder;
 use App\Models\TokenTransaction;
 use App\Services\RazorpayService;
@@ -160,7 +160,7 @@ class PaymentController extends Controller
                 'description' => "Purchased {$paymentOrder->tokens} Tokens (" . strtoupper($paymentOrder->plan_id) . " Pack) via Razorpay [ID: {$paymentId}]",
             ]);
 
-            Notification::create([
+            AppNotification::create([
                 'user_id' => $user->id,
                 'title' => 'Tokens Credited Successfully!',
                 'message' => "Payment of {$paymentOrder->formatted_amount} received. {$paymentOrder->tokens} tokens added to your wallet.",
