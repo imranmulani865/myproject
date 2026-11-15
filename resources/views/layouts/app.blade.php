@@ -475,7 +475,7 @@
             <div class="flex items-center justify-between h-16">
                 <!-- Brand / Logo -->
                 <div class="flex items-center gap-3">
-                    <a href="{{ auth()->check() ? route('dashboard') : url('/') }}" class="flex items-center gap-3 group">
+                    <a href="{{ url('/') }}" class="flex items-center gap-3 group">
                         <div class="w-10 h-10 rounded-xl bg-[#FF0000] flex items-center justify-center shadow-lg shadow-red-500/30 group-hover:scale-105 transition">
                             <i class="fa-brands fa-youtube text-white text-xl"></i>
                         </div>
@@ -624,12 +624,12 @@
     </div>
 
     <!-- Main Content Area -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <main class="flex-1 w-full mx-auto {{ request()->routeIs('home') ? '' : 'max-w-7xl px-4 sm:px-6 lg:px-8 py-6' }}">
         @yield('content')
     </main>
 
     <!-- Footer -->
-    <footer class="border-t py-6 text-center text-xs border-studio-line bg-white/55 text-studio-muted">
+    <footer class="border-t py-8 text-center text-xs border-[#222] bg-[#0a0a0a] text-neutral-400">
         <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-2">
                 <span class="font-bold text-studio-ink">AI Shorts Creator</span>
@@ -652,10 +652,16 @@
             stage.classList.add('book-opening-fast');
             setTimeout(() => { if (stage) stage.remove(); }, 400);
         }
-        setTimeout(() => {
+        if (sessionStorage.getItem('book_stage_done')) {
             const stage = document.getElementById('book-opening-stage');
             if (stage) stage.remove();
-        }, 3500);
+        } else {
+            sessionStorage.setItem('book_stage_done', 'true');
+            setTimeout(() => {
+                const stage = document.getElementById('book-opening-stage');
+                if (stage) stage.remove();
+            }, 2000);
+        }
     </script>
 </body>
 </html>
