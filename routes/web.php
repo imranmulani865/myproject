@@ -42,6 +42,11 @@ Route::middleware('auth')->group(function () {
 
     // Token Wallet
     Route::get('/wallet', [DashboardController::class, 'wallet'])->name('wallet');
+
+    // 90s Nostalgia Video Studio Showcase
+    Route::get('/nostalgia-studio', function () {
+        return view('nostalgia.studio');
+    })->name('nostalgia.studio');
 });
 
 // Admin routes (Protected by auth and admin middleware)

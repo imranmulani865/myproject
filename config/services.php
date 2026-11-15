@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'razorpay' => [
+        'key_id' => env('RAZORPAY_KEY_ID', 'rzp_test_mock_key'),
+        'key_secret' => env('RAZORPAY_KEY_SECRET', 'rzp_test_mock_secret'),
+    ],
+
 ];

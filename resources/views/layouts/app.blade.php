@@ -656,6 +656,11 @@
                             </a>
                         @endif
 
+                        <a href="{{ route('nostalgia.studio') }}" class="inline-flex min-h-11 items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pink-50 border border-pink-200 text-pink-700 text-xs font-bold hover:bg-pink-100 transition">
+                            <i class="fa-solid fa-clapperboard text-pink-500" aria-hidden="true"></i>
+                            <span class="hidden md:inline">90s Song Studio</span>
+                        </a>
+
                         <a href="{{ route('projects.create') }}" aria-label="Create a new short" class="inline-flex min-h-11 items-center gap-2 bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold px-3 sm:px-4 py-2 rounded-xl shadow-lg shadow-brand-500/20 transition hover:shadow-brand-500/40">
                             <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
                             <span class="hidden sm:inline">New Short</span>

@@ -101,6 +101,11 @@ class User extends Authenticatable
         return $this->hasMany(TokenTransaction::class)->latest();
     }
 
+    public function paymentOrders(): HasMany
+    {
+        return $this->hasMany(PaymentOrder::class)->latest();
+    }
+
     public function unreadNotificationsCount(): int
     {
         return $this->appNotifications()->where('is_read', false)->count();
