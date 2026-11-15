@@ -642,12 +642,26 @@
                 <!-- Navigation Links -->
                 <div class="flex items-center gap-2 sm:gap-3">
                     @auth
-                        <a href="{{ route('projects.create') }}" class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg shadow-brand-500/20 transition hover:shadow-brand-500/40">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <!-- Token Wallet Pill -->
+                        <a href="{{ route('wallet') }}" class="hidden lg:inline-flex min-h-11 items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold hover:bg-amber-100 transition group">
+                            <i class="fa-solid fa-coins text-amber-600 group-hover:rotate-12 transition" aria-hidden="true"></i>
+                            <span>{{ number_format(auth()->user()->tokens) }} Tokens</span>
+                        </a>
+
+                        @if(auth()->user()->isAdmin())
+                            <!-- Admin Panel Badge -->
+                            <a href="{{ route('admin.dashboard') }}" class="hidden xl:inline-flex min-h-11 items-center gap-1.5 px-3 py-1.5 rounded-xl bg-violet-50 border border-violet-200 text-violet-700 text-xs font-semibold hover:bg-violet-100 transition">
+                                <i class="fa-solid fa-shield-halved text-violet-600" aria-hidden="true"></i>
+                                <span>Admin</span>
+                            </a>
+                        @endif
+
+                        <a href="{{ route('projects.create') }}" aria-label="Create a new short" class="inline-flex min-h-11 items-center gap-2 bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold px-3 sm:px-4 py-2 rounded-xl shadow-lg shadow-brand-500/20 transition hover:shadow-brand-500/40">
+                            <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
                             <span class="hidden sm:inline">New Short</span>
                         </a>
 
-                        <a href="{{ route('dashboard') }}" class="text-studio-muted hover:text-studio-ink px-3 py-2 rounded-lg text-sm font-medium transition hover:bg-studio-lavender/50">
+                        <a href="{{ route('dashboard') }}" aria-label="Dashboard" class="text-studio-muted hover:text-studio-ink px-2 sm:px-3 py-2 rounded-lg text-sm font-medium transition hover:bg-studio-lavender/50">
                             <i class="fa-solid fa-table-columns sm:mr-1"></i>
                             <span class="hidden sm:inline">Dashboard</span>
                         </a>
@@ -679,6 +693,17 @@
                                 <div class="px-4 py-2 border-b border-studio-line text-xs text-studio-muted">
                                     Signed in as <br><span class="font-semibold text-studio-ink truncate block">{{ auth()->user()->email }}</span>
                                 </div>
+                                <a href="{{ route('wallet') }}" class="px-4 py-2 text-sm text-studio-ink hover:bg-amber-50 flex items-center gap-2">
+                                    <i class="fa-solid fa-wallet text-amber-600" aria-hidden="true"></i>
+                                    Token Wallet ({{ auth()->user()->tokens }})
+                                </a>
+                                @if(auth()->user()->isAdmin())
+                                    <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 text-sm text-violet-700 hover:bg-violet-50 flex items-center gap-2">
+                                        <i class="fa-solid fa-shield-halved text-violet-600" aria-hidden="true"></i>
+                                        Admin Panel
+                                    </a>
+                                @endif
+                                <div class="border-t border-studio-line my-1"></div>
                                 <form method="POST" action="{{ route('logout') }}" class="w-full">
                                     @csrf
                                     <button type="submit" class="w-full text-left px-4 py-2 text-sm text-rose-700 hover:bg-rose-50 hover:text-rose-800 flex items-center gap-2">

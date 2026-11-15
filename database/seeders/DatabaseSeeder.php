@@ -16,11 +16,27 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::firstOrCreate(
+        // Admin User
+        $admin = User::updateOrCreate(
             ['email' => 'admin@example.com'],
             [
-                'name' => 'Demo Creator',
+                'name' => 'System Administrator',
                 'password' => Hash::make('password123'),
+                'role' => 'admin',
+                'status' => 'active',
+                'tokens' => 9999,
+            ]
+        );
+
+        // Creator User
+        $creator = User::updateOrCreate(
+            ['email' => 'creator@shortstudio.com'],
+            [
+                'name' => 'Pro Creator',
+                'password' => Hash::make('Shorts@1234'),
+                'role' => 'user',
+                'status' => 'active',
+                'tokens' => 150,
             ]
         );
     }

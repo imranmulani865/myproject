@@ -25,6 +25,22 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            $user = Auth::user();
+
+            if ($user->status === 'suspended') {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'Your account has been suspended by the administrator.',
+                ]);
+            }
+
+            if ($user->status === 'pending') {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'Your account is pending admin approval. Please contact support.',
+                ]);
+            }
+
             $request->session()->regenerate();
             return redirect()->intended(route('dashboard'))->with('success', 'Logged in successfully!');
         }
@@ -54,6 +70,15 @@ class AuthController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
+            'role' => 'user',
+            'status' => 'active',
+            'tokens' => 20,
+        ]);
+
+        $user->tokenTransactions()->create([
+            'amount' => 20,
+            'type' => 'bonus',
+            'description' => 'Welcome Free Trial Bonus (20 Tokens)',
         ]);
 
         Auth::login($user);

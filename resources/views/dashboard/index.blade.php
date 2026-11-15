@@ -12,10 +12,14 @@
                 Track your video projects and the shorts created from each one.
             </p>
         </div>
-        <div>
+        <div class="flex flex-wrap items-center gap-3">
+            <a href="{{ route('wallet') }}" class="inline-flex min-h-11 items-center gap-2 px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 font-semibold text-sm hover:bg-amber-100 transition-colors">
+                <i class="fa-solid fa-coins text-amber-600" aria-hidden="true"></i>
+                <span>{{ number_format(auth()->user()->tokens) }} Tokens</span>
+            </a>
             <a href="{{ route('projects.create') }}" class="inline-flex min-h-11 items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold px-5 py-3 rounded-xl shadow-lg shadow-brand-600/20 transition-colors">
-                <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                <span>New project</span>
+                <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
+                <span>Create New Shorts</span>
             </a>
         </div>
     </div>

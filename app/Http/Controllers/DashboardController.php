@@ -27,4 +27,13 @@ class DashboardController extends Controller
 
         return view('dashboard.index', compact('projects', 'stats', 'recentNotifications'));
     }
+
+    public function wallet()
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $transactions = $user->tokenTransactions()->latest()->paginate(15);
+
+        return view('dashboard.wallet', compact('user', 'transactions'));
+    }
 }

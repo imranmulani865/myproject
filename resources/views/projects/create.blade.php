@@ -1,28 +1,125 @@
 @extends('layouts.app')
 
+@section('title', 'Create New AI Shorts')
+
 @section('content')
 <div class="max-w-3xl mx-auto py-6" x-data="createProjectForm()">
     <!-- Header -->
-    <div class="mb-8">
-        <a href="{{ route('dashboard') }}" class="inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-studio-muted hover:text-brand-600 transition-colors mb-3">
-            <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-            <span>Back to Dashboard</span>
-        </a>
-        <h1 class="text-3xl font-bold text-studio-ink flex items-center gap-3">
-            <span>Create a new project</span>
-            <i class="fa-solid fa-clapperboard text-brand-600 text-2xl" aria-hidden="true"></i>
-        </h1>
-        <p class="text-sm text-studio-muted mt-2">
-            Add a YouTube link or upload a video, then choose the shorts you want to create.
-        </p>
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <a href="{{ route('dashboard') }}" class="inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-studio-muted hover:text-brand-600 transition-colors mb-3">
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                <span>Back to Dashboard</span>
+            </a>
+            <h1 class="text-3xl font-bold text-studio-ink flex items-center gap-3">
+                <span>Create a new project</span>
+                <i class="fa-solid fa-clapperboard text-brand-600 text-2xl" aria-hidden="true"></i>
+            </h1>
+            <p class="text-sm text-studio-muted mt-2">
+                Add a YouTube link or upload a video, then choose Song or Dialogue mode for your shorts.
+            </p>
+        </div>
+
+        <!-- Token Wallet Pill -->
+        <div class="inline-flex items-center gap-3 bg-studio-surface border border-studio-line rounded-2xl p-2.5 px-4 shadow-sm">
+            <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-sm border border-amber-200">
+                <i class="fa-solid fa-coins"></i>
+            </div>
+            <div>
+                <span class="block text-xs font-semibold text-studio-muted">Your balance</span>
+                <span class="text-sm font-bold text-studio-ink">
+                    {{ number_format(auth()->user()->tokens) }} Tokens
+                </span>
+            </div>
+            <a href="{{ route('wallet') }}" class="ml-2 text-sm text-brand-600 hover:text-brand-700 font-semibold underline">
+                Recharge
+            </a>
+        </div>
     </div>
+
+    <!-- Error banner if any -->
+    @if(session('error'))
+        <div class="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-start gap-3">
+            <i class="fa-solid fa-circle-exclamation text-rose-700 text-lg mt-0.5"></i>
+            <div>
+                <p class="font-bold">Error Creating Project</p>
+                <p class="text-sm text-rose-700 mt-0.5">{{ session('error') }}</p>
+            </div>
+        </div>
+    @endif
 
     <!-- Main Card -->
     <div class="bg-studio-surface border border-studio-line rounded-3xl p-6 sm:p-8 shadow-[0_18px_48px_rgba(48,40,166,0.08)]">
         <form method="POST" action="{{ route('projects.store') }}" enctype="multipart/form-data" @submit="isSubmitting = true" class="space-y-6">
             @csrf
 
-            <!-- Source Type Switcher Tabs -->
+            <!-- 1. MODE SELECTION (Song vs Dialogue) -->
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <label class="block text-sm font-semibold text-studio-ink">
+                        Processing mode <span class="text-rose-700">*</span>
+                    </label>
+                    <span class="text-xs text-studio-muted">Tokens vary by mode</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Dialogue Mode -->
+                    <label class="cursor-pointer">
+                        <input type="radio" name="mode" value="dialogue" x-model="mode" class="peer sr-only">
+                        <div class="p-4 rounded-2xl bg-studio-canvas border-2 border-studio-line peer-checked:border-brand-500 peer-checked:bg-studio-lavender/60 transition-colors hover:border-brand-400 h-full flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 rounded-lg bg-studio-lavender text-brand-600 flex items-center justify-center text-sm">
+                                            <i class="fa-solid fa-microphone"></i>
+                                        </div>
+                                        <span class="font-bold text-studio-ink text-sm">Dialogue / Podcast</span>
+                                    </div>
+                                    <span class="px-2 py-0.5 rounded text-xs font-semibold bg-studio-surface text-brand-700 border border-brand-200">
+                                        10 Tokens/short
+                                    </span>
+                                </div>
+                                <p class="text-sm text-studio-muted mt-2">
+                                    Best for interviews, podcasts, speeches, explainers, and standup comedy. Cuts at natural sentence pauses.
+                                </p>
+                            </div>
+                            <div class="text-xs text-brand-700 font-semibold mt-3 flex items-center gap-1.5">
+                                <i class="fa-solid fa-bolt text-xs"></i>
+                                <span>Speech Hook & Curiosity Detection</span>
+                            </div>
+                        </div>
+                    </label>
+
+                    <!-- Song Mode -->
+                    <label class="cursor-pointer">
+                        <input type="radio" name="mode" value="song" x-model="mode" class="peer sr-only">
+                        <div class="p-4 rounded-2xl bg-studio-canvas border-2 border-studio-line peer-checked:border-pink-500 peer-checked:bg-pink-50 transition-colors hover:border-pink-300 h-full flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 rounded-lg bg-pink-100 text-pink-700 flex items-center justify-center text-sm">
+                                            <i class="fa-solid fa-music"></i>
+                                        </div>
+                                        <span class="font-bold text-studio-ink text-sm">Song / Music Video</span>
+                                    </div>
+                                    <span class="px-2 py-0.5 rounded text-xs font-semibold bg-pink-50 text-pink-700 border border-pink-200">
+                                        15 Tokens/short
+                                    </span>
+                                </div>
+                                <p class="text-sm text-studio-muted mt-2">
+                                    Best for songs, music tracks, Bollywood/Hindi songs. Detects high-energy Mukhda & Chorus peaks.
+                                </p>
+                            </div>
+                            <div class="text-xs text-pink-700 font-semibold mt-3 flex items-center gap-1.5">
+                                <i class="fa-solid fa-fire text-xs"></i>
+                                <span>Mukhda (Chorus) Peak Extraction</span>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 2. Video Source Type Switcher -->
             <div>
                 <label class="block text-sm font-semibold text-studio-ink mb-3">
                     Video source
@@ -98,7 +195,7 @@
                 </label>
                 <input id="title" type="text" name="title" value="{{ old('title') }}"
                        class="w-full px-4 py-2.5 bg-studio-canvas border border-studio-line rounded-xl text-studio-ink placeholder:text-studio-muted text-sm focus:outline-none focus:ring-2 focus:ring-brand-400/30 focus:border-brand-500"
-                       placeholder="e.g. AI Podcast Ep 12 Highlights">
+                       placeholder="e.g. Sheher Mein - Song Highlights or Podcast Ep 5">
                 @error('title')
                     <p class="text-sm text-rose-700 mt-1.5">{{ $message }}</p>
                 @enderror
@@ -117,7 +214,7 @@
                             <div class="p-3 text-center rounded-xl bg-studio-canvas border border-studio-line peer-checked:border-brand-500 peer-checked:bg-studio-lavender peer-checked:text-brand-700 text-studio-ink font-semibold text-xs sm:text-sm transition">
                                 <i class="fa-regular fa-clock mr-1"></i>
                                 <span>~30s Target</span>
-                                <span class="block text-[10px] text-studio-muted font-normal mt-0.5">18s - 32s natural cut</span>
+                                <span class="block text-xs text-studio-muted font-normal mt-0.5">18s - 32s natural cut</span>
                             </div>
                         </label>
                         <label class="cursor-pointer">
@@ -136,34 +233,75 @@
                     <label for="clips_count" class="block text-sm font-semibold text-studio-ink mb-2">
                         Number of shorts
                     </label>
-                    <select id="clips_count" name="clips_count"
+                    <select id="clips_count" name="clips_count" x-model.number="clipsCount"
                             class="w-full px-4 py-3 bg-studio-canvas border border-studio-line rounded-xl text-studio-ink text-sm focus:outline-none focus:ring-2 focus:ring-brand-400/30 focus:border-brand-500">
                         <option value="1">1 Short (Top Best Moment)</option>
                         <option value="2">2 Shorts</option>
                         <option value="3" selected>3 Shorts (Recommended)</option>
-                        <option value="5">5 Shorts (Best for Podcasts)</option>
+                        <option value="5">5 Shorts (Maximum Coverage)</option>
                     </select>
+                </div>
+            </div>
+
+            <!-- DYNAMIC TOKEN ESTIMATOR BOX -->
+            <div class="p-5 rounded-2xl bg-studio-canvas border border-studio-line">
+                <div class="flex items-center justify-between gap-3 mb-3 pb-3 border-b border-studio-line">
+                    <span class="text-sm font-semibold text-studio-ink flex items-center gap-2">
+                        <i class="fa-solid fa-calculator text-brand-600"></i>
+                        Token Cost Calculator
+                    </span>
+                    <span class="text-xs font-medium text-studio-muted">
+                        Rate: <strong class="text-studio-ink" x-text="mode === 'song' ? '15 Tokens / short' : '10 Tokens / short'"></strong>
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3 text-center">
+                    <div class="bg-studio-surface p-2.5 rounded-xl border border-studio-line">
+                        <span class="block text-xs font-semibold text-studio-muted">Your wallet</span>
+                        <span class="text-sm font-bold text-studio-ink" x-text="userTokens + ' Tokens'"></span>
+                    </div>
+                    <div class="bg-studio-lavender/60 p-2.5 rounded-xl border border-brand-200">
+                        <span class="block text-xs font-semibold text-brand-700">Project cost</span>
+                        <span class="text-sm font-bold text-studio-ink" x-text="tokenCost + ' Tokens'"></span>
+                    </div>
+                    <div :class="remainingTokens >= 0 ? 'bg-emerald-50 border-emerald-200' : 'bg-rose-50 border-rose-200'"
+                         class="p-2.5 rounded-xl border">
+                        <span class="block text-xs font-semibold" :class="remainingTokens >= 0 ? 'text-emerald-700' : 'text-rose-700'">
+                            Remaining
+                        </span>
+                        <span class="text-sm font-bold" :class="remainingTokens >= 0 ? 'text-emerald-800' : 'text-rose-800'"
+                              x-text="remainingTokens + ' Tokens'"></span>
+                    </div>
+                </div>
+
+                <!-- Insufficient Token Alert -->
+                <div x-cloak x-show="!canSubmit" class="mt-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-rose-700 text-base"></i>
+                        <span>Insufficient Tokens! You need <strong x-text="tokenCost"></strong> tokens, but your wallet only has <strong x-text="userTokens"></strong> tokens.</span>
+                    </div>
+                    <a href="{{ route('wallet') }}" class="inline-flex min-h-10 items-center px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm whitespace-nowrap transition-colors">
+                        Recharge Now
+                    </a>
                 </div>
             </div>
 
             <!-- Notice Banner -->
             <div class="p-4 rounded-2xl bg-studio-lavender/60 border border-brand-200 text-studio-muted text-xs flex items-start gap-3">
-                <i class="fa-solid fa-microchip text-base text-brand-600 mt-0.5"></i>
+                <i class="fa-solid fa-shield-halved text-base text-brand-600 mt-0.5"></i>
                 <div class="space-y-1">
-                    <p class="font-semibold text-studio-ink">Natural cuts and subscribe outro</p>
-                    <p class="text-studio-muted">
-                        Ollama Gemma looks for complete spoken thoughts and cuts near sentence pauses. Each short includes a <strong>Like, Comment & Subscribe</strong> outro.
-                    </p>
+                    <p class="font-semibold text-studio-ink">Natural cuts, token refunds, and subscribe outro</p>
+                    <p class="text-studio-muted">Ollama Gemma cuts dialogue near sentence pauses and finds music peaks. If processing fails, tokens are automatically refunded. Each short includes a Subscribe & Like outro.</p>
                 </div>
             </div>
 
             <!-- Submit Button -->
-            <button type="submit" :disabled="isSubmitting"
-                    class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-4 px-6 rounded-2xl shadow-lg shadow-brand-600/20 transition-colors flex items-center justify-center gap-3 disabled:opacity-50">
+            <button type="submit" :disabled="isSubmitting || !canSubmit"
+                    class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-4 px-6 rounded-2xl shadow-lg shadow-brand-600/20 transition-colors flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed">
                 <template x-if="!isSubmitting">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-wand-magic-sparkles"></i>
-                        <span>Create shorts</span>
+                        <span x-text="canSubmit ? 'Create shorts (' + tokenCost + ' Tokens)' : 'Insufficient Tokens - Please Recharge'"></span>
                     </div>
                 </template>
                 <template x-if="isSubmitting">
@@ -184,6 +322,22 @@ function createProjectForm() {
         sourceType: 'youtube',
         selectedFile: null,
         isSubmitting: false,
+        mode: 'dialogue',
+        clipsCount: 3,
+        userTokens: {{ auth()->user()->tokens }},
+
+        get tokenCost() {
+            const rate = (this.mode === 'song') ? 15 : 10;
+            return this.clipsCount * rate;
+        },
+
+        get remainingTokens() {
+            return this.userTokens - this.tokenCost;
+        },
+
+        get canSubmit() {
+            return this.remainingTokens >= 0;
+        }
     }
 }
 </script>
