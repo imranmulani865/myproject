@@ -850,9 +850,10 @@ def main():
         log_progress(args.db_path, project_id, 10, "Fetching video source and metadata...", status="processing")
 
         if source_type == "youtube":
-            url = project['source_url']
+            raw_url = project['source_url']
             log_progress(args.db_path, project_id, 15, "Downloading YouTube video & lyrics/subtitles...")
-            video_id = extract_youtube_video_id(url)
+            video_id = extract_youtube_video_id(raw_url)
+            url = f"https://www.youtube.com/watch?v={video_id}" if video_id else raw_url
 
             if video_id:
                 raw_transcript_items = fetch_youtube_transcript(video_id)
@@ -868,6 +869,7 @@ def main():
                     'outtmpl': out_template,
                     'quiet': True,
                     'no_warnings': True,
+                    'noplaylist': True,
                 }
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                     info = ydl.extract_info(url, download=True)

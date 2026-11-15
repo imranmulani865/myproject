@@ -13,7 +13,7 @@ class ProcessVideoJob implements ShouldQueue
     use Queueable;
 
     public int $timeout = 1800; // 30 minutes max
-    public int $tries = 1;
+    public int $tries = 3;
 
     public function __construct(public int $projectId)
     {
@@ -108,6 +108,40 @@ class ProcessVideoJob implements ShouldQueue
                     'refund'
                 );
                 $project->update(['tokens_used' => 0]);
+            }
+        }
+    }
+
+    /**
+     * Handle a job failure from queue timeout or max attempts.
+     */
+    public function failed(?\Throwable $exception = null): void
+    {
+        $project = VideoProject::find($this->projectId);
+        if (!$project) {
+            return;
+        }
+
+        $project->refresh();
+        if ($project->status !== 'completed') {
+            $errorMsg = $exception ? $exception->getMessage() : 'Queue worker timeout or max attempts exceeded.';
+            $project->update([
+                'status' => 'failed',
+                'progress_step' => 'Processing failed: ' . substr($errorMsg, 0, 150),
+                'error_message' => $errorMsg,
+            ]);
+
+            // Automatic token refund on failure
+            if ($project->tokens_used > 0 && $project->user) {
+                $tokensToRefund = $project->tokens_used;
+                $project->user->addTokens(
+                    $tokensToRefund,
+                    "Automatic refund for failed project #{$project->id}",
+                    null,
+                    'refund'
+                );
+                $project->update(['tokens_used' => 0]);
+                Log::info("ProcessVideoJob: Refunded {$tokensToRefund} tokens to user #{$project->user_id} for project #{$project->id}");
             }
         }
     }
