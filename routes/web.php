@@ -40,8 +40,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read_all');
 
-    // Token Wallet
+    // Token Wallet & Payments
     Route::get('/wallet', [DashboardController::class, 'wallet'])->name('wallet');
+    Route::post('/payment/order', [\App\Http\Controllers\PaymentController::class, 'createOrder'])->name('payment.order');
+    Route::post('/payment/verify', [\App\Http\Controllers\PaymentController::class, 'verifyPayment'])->name('payment.verify');
 
     // 90s Nostalgia Video Studio Showcase
     Route::get('/nostalgia-studio', function () {
@@ -57,4 +59,5 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('/users/{user}/tokens', [\App\Http\Controllers\AdminController::class, 'adjustTokens'])->name('users.tokens');
     Route::get('/projects', [\App\Http\Controllers\AdminController::class, 'projects'])->name('projects');
     Route::get('/transactions', [\App\Http\Controllers\AdminController::class, 'transactions'])->name('transactions');
+    Route::get('/payments', [\App\Http\Controllers\AdminController::class, 'payments'])->name('payments');
 });

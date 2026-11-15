@@ -55,8 +55,9 @@
                     <span>Remember me</span>
                 </label>
 
-                <button type="submit" class="min-h-12 w-full rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/20 transition-colors hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
-                    Sign in to studio
+                <button type="submit" class="min-h-12 w-full rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-brand-600/30 transition-all transform hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 flex items-center justify-center gap-2">
+                    <span>Sign in to studio</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
                 </button>
             </form>
 

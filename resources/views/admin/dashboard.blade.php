@@ -34,6 +34,10 @@
                 <i class="fa-solid fa-receipt text-amber-400"></i>
                 Token Ledger
             </a>
+            <a href="{{ route('admin.payments') }}" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl border border-slate-700 transition">
+                <i class="fa-solid fa-credit-card text-blue-400"></i>
+                Payments
+            </a>
         </div>
     </div>
 

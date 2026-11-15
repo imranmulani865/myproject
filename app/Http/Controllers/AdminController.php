@@ -125,4 +125,10 @@ class AdminController extends Controller
         $transactions = TokenTransaction::with(['user', 'admin', 'project'])->latest()->paginate(20);
         return view('admin.transactions', compact('transactions'));
     }
+
+    public function payments(): View
+    {
+        $payments = \App\Models\PaymentOrder::with('user')->latest()->paginate(20);
+        return view('admin.payments', compact('payments'));
+    }
 }

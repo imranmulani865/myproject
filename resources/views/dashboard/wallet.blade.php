@@ -1,9 +1,107 @@
 @extends('layouts.app')
 
-@section('title', 'Token Wallet & Transactions')
+@section('title', 'Token Wallet & Recharge')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="{ rechargeModal: false }">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" 
+     x-data="{ 
+        rechargeModal: false, 
+        payModal: false, 
+        orderData: null, 
+        loading: false, 
+        successNotice: false,
+        errorMessage: '',
+        async initiatePayment(planId) {
+            this.loading = true;
+            this.errorMessage = '';
+            try {
+                const res = await fetch('{{ route('payment.order') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ plan_id: planId })
+                });
+                const data = await res.json();
+                if (!data.success) {
+                    alert(data.message || 'Error creating payment order');
+                    this.loading = false;
+                    return;
+                }
+                this.orderData = data;
+                if (data.is_mock) {
+                    this.payModal = true;
+                } else {
+                    const options = {
+                        key: data.key_id,
+                        amount: data.amount,
+                        currency: 'INR',
+                        name: 'AI Shorts Studio',
+                        description: data.plan_name + ' (' + data.tokens + ' Tokens)',
+                        order_id: data.order_id,
+                        handler: async (response) => {
+                            await this.verifyPayment(response.razorpay_order_id, response.razorpay_payment_id, response.razorpay_signature);
+                        },
+                        prefill: {
+                            name: data.user.name,
+                            email: data.user.email
+                        },
+                        theme: {
+                            color: '#6366f1'
+                        }
+                    };
+                    const rzp = new window.Razorpay(options);
+                    rzp.open();
+                }
+            } catch (e) {
+                alert('Failed to initiate payment: ' + e.message);
+            } finally {
+                this.loading = false;
+            }
+        },
+        async verifyPayment(orderId, paymentId, signature = '') {
+            this.loading = true;
+            try {
+                const res = await fetch('{{ route('payment.verify') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        razorpay_order_id: orderId,
+                        razorpay_payment_id: paymentId,
+                        razorpay_signature: signature
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    this.payModal = false;
+                    this.successNotice = true;
+                    setTimeout(() => window.location.reload(), 1800);
+                } else {
+                    alert(data.message || 'Payment verification failed');
+                }
+            } catch (e) {
+                alert('Verification error: ' + e.message);
+            } finally {
+                this.loading = false;
+            }
+        }
+     }">
+
+    <!-- Success Celebration Toast -->
+    <div x-cloak x-show="successNotice" 
+         x-transition
+         class="fixed top-8 right-8 z-50 p-4 rounded-2xl bg-emerald-600 text-white shadow-2xl flex items-center gap-3 border border-emerald-400">
+        <i class="fa-solid fa-circle-check text-2xl"></i>
+        <div>
+            <div class="font-extrabold text-sm">Payment Successful!</div>
+            <div class="text-xs text-emerald-100">Tokens have been credited to your wallet. Refreshing...</div>
+        </div>
+    </div>
+
     <!-- Breadcrumb & Header -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div>
@@ -21,13 +119,13 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <button @click="rechargeModal = true" class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-semibold text-sm px-5 py-2.5 rounded-xl shadow-lg shadow-amber-500/20 transition">
-                <i class="fa-solid fa-plus-circle"></i>
-                Buy / Recharge Tokens
-            </button>
-            <a href="{{ route('projects.create') }}" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold px-4 py-2.5 rounded-xl border border-slate-700 transition">
+            <a href="{{ route('nostalgia.studio') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-indigo-600 hover:from-pink-600 hover:to-indigo-700 text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-lg shadow-pink-500/20 transition">
+                <i class="fa-solid fa-clapperboard"></i>
+                <span>Nostalgia Studio</span>
+            </a>
+            <a href="{{ route('projects.create') }}" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl border border-slate-700 transition">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
-                Create Short
+                <span>Create Short</span>
             </a>
         </div>
     </div>
@@ -54,7 +152,7 @@
         <!-- Token Consumption Rates -->
         <div class="rounded-2xl bg-slate-900/90 border border-slate-800 p-6 flex flex-col justify-between">
             <div>
-                <span class="text-xs uppercase tracking-wider font-semibold text-slate-400">Token Rates</span>
+                <span class="text-xs uppercase tracking-wider font-semibold text-slate-400">Token Consumption Rates</span>
                 <div class="mt-3 space-y-2">
                     <div class="flex items-center justify-between text-xs py-1.5 border-b border-slate-800/80">
                         <span class="text-slate-300 flex items-center gap-2">
@@ -73,7 +171,7 @@
                 </div>
             </div>
             <div class="text-[11px] text-slate-500 mt-2">
-                Tokens automatically deducted on project start; refunded if processing fails.
+                Tokens automatically deducted on project start; refunded automatically if processing fails.
             </div>
         </div>
 
@@ -96,21 +194,27 @@
         </div>
     </div>
 
-    <!-- Pricing Packs Grid -->
+    <!-- Pricing Packs Grid with Razorpay Integration -->
     <div class="mb-10">
-        <div class="flex items-center justify-between mb-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
             <div>
-                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                <h2 class="text-xl font-black text-white flex items-center gap-2">
                     <i class="fa-solid fa-tag text-indigo-400"></i>
-                    Token Recharge Packs
+                    <span>Token Recharge Packs</span>
                 </h2>
-                <p class="text-xs text-slate-400">Select a pack to buy tokens via instant UPI / manual recharge.</p>
+                <p class="text-xs text-slate-400">Instant activation via Razorpay (UPI, Credit/Debit Card, NetBanking) or Manual UPI.</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 text-xs font-semibold">
+                    <i class="fa-solid fa-shield-halved text-[10px]"></i>
+                    Razorpay Secure 256-bit SSL
+                </span>
             </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Starter -->
-            <div class="rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 p-6 transition flex flex-col justify-between">
+            <div class="rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 p-6 transition flex flex-col justify-between group">
                 <div>
                     <div class="flex items-center justify-between mb-3">
                         <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300">Starter</span>
@@ -124,9 +228,17 @@
                         <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Auto subscribe CTA overlay</li>
                     </ul>
                 </div>
-                <button @click="rechargeModal = true" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition border border-slate-700">
-                    Recharge ₹299
-                </button>
+                <div class="space-y-2">
+                    <button type="button" @click="initiatePayment('starter')" :disabled="loading"
+                            class="w-full py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-extrabold transition shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bolt text-amber-300"></i>
+                        <span>Pay ₹299 with Razorpay</span>
+                    </button>
+                    <button type="button" @click="rechargeModal = true"
+                            class="w-full py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-slate-200 text-[11px] font-semibold transition border border-slate-800">
+                        Pay via Manual UPI QR
+                    </button>
+                </div>
             </div>
 
             <!-- Pro Creator (Popular) -->
@@ -147,13 +259,21 @@
                         <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Mukhda & Chorus high-energy detection</li>
                     </ul>
                 </div>
-                <button @click="rechargeModal = true" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-xs font-bold transition shadow-lg shadow-indigo-500/25">
-                    Recharge ₹799
-                </button>
+                <div class="space-y-2">
+                    <button type="button" @click="initiatePayment('pro')" :disabled="loading"
+                            class="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-600 hover:from-indigo-600 hover:to-pink-700 text-white text-xs font-extrabold transition shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bolt text-amber-300"></i>
+                        <span>Pay ₹799 with Razorpay</span>
+                    </button>
+                    <button type="button" @click="rechargeModal = true"
+                            class="w-full py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-slate-200 text-[11px] font-semibold transition border border-slate-800">
+                        Pay via Manual UPI QR
+                    </button>
+                </div>
             </div>
 
             <!-- Agency -->
-            <div class="rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 p-6 transition flex flex-col justify-between">
+            <div class="rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 p-6 transition flex flex-col justify-between group">
                 <div>
                     <div class="flex items-center justify-between mb-3">
                         <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300">Agency Pack</span>
@@ -167,9 +287,17 @@
                         <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> VIP priority queue</li>
                     </ul>
                 </div>
-                <button @click="rechargeModal = true" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition border border-slate-700">
-                    Recharge ₹1,999
-                </button>
+                <div class="space-y-2">
+                    <button type="button" @click="initiatePayment('agency')" :disabled="loading"
+                            class="w-full py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-extrabold transition shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bolt text-amber-300"></i>
+                        <span>Pay ₹1,999 with Razorpay</span>
+                    </button>
+                    <button type="button" @click="rechargeModal = true"
+                            class="w-full py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-slate-200 text-[11px] font-semibold transition border border-slate-800">
+                        Pay via Manual UPI QR
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -204,6 +332,8 @@
                                 <td class="px-6 py-3.5 whitespace-nowrap">
                                     @if($tx->type === 'bonus')
                                         <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Bonus</span>
+                                    @elseif($tx->type === 'purchase')
+                                        <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Razorpay</span>
                                     @elseif($tx->type === 'usage')
                                         <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30">Usage</span>
                                     @elseif($tx->type === 'manual_credit')
@@ -247,16 +377,84 @@
         @endif
     </div>
 
+    <!-- RAZORPAY TEST / SIMULATION MODAL -->
+    <div x-cloak x-show="payModal"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md"
+         x-transition>
+        <div class="bg-slate-900 border border-indigo-500/50 rounded-3xl max-w-md w-full p-6 shadow-2xl relative" @click.outside="payModal = false">
+            <button @click="payModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Razorpay Brand Header -->
+            <div class="flex items-center gap-3 pb-4 mb-4 border-b border-slate-800">
+                <div class="w-10 h-10 rounded-xl bg-blue-600/20 text-blue-400 flex items-center justify-center text-lg border border-blue-500/30">
+                    <i class="fa-solid fa-credit-card"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-base font-black text-white">Razorpay Secure Checkout</span>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">Test Mode</span>
+                    </div>
+                    <p class="text-xs text-slate-400">Order ID: <span class="font-mono text-slate-300" x-text="orderData?.order_id"></span></p>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 mb-5 space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-slate-400">Pack Selected:</span>
+                    <span class="font-bold text-white" x-text="orderData?.plan_name"></span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-slate-400">Tokens to Credit:</span>
+                    <span class="font-extrabold text-amber-400" x-text="'+' + orderData?.tokens + ' Tokens'"></span>
+                </div>
+                <div class="flex items-center justify-between text-sm pt-2 border-t border-slate-800">
+                    <span class="font-bold text-slate-300">Total Payable:</span>
+                    <span class="font-black text-emerald-400 text-lg" x-text="'₹' + (orderData?.amount / 100).toFixed(2)"></span>
+                </div>
+            </div>
+
+            <!-- Simulation Payment Options -->
+            <div class="space-y-3 mb-6">
+                <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Simulate Payment Method:</div>
+                <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                    <div class="p-2.5 rounded-xl bg-slate-950 border border-indigo-500/40 text-indigo-300 font-bold flex flex-col items-center gap-1">
+                        <i class="fa-solid fa-mobile-screen text-base"></i>
+                        <span>UPI / QR</span>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 font-bold flex flex-col items-center gap-1">
+                        <i class="fa-regular fa-credit-card text-base"></i>
+                        <span>Cards</span>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 font-bold flex flex-col items-center gap-1">
+                        <i class="fa-solid fa-building-columns text-base"></i>
+                        <span>NetBanking</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <button type="button" 
+                        @click="verifyPayment(orderData.order_id, 'pay_mock_' + Date.now(), 'mock_sig_pass')"
+                        :disabled="loading"
+                        class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-sm shadow-xl shadow-emerald-500/25 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-circle-check" x-show="!loading"></i>
+                    <i class="fa-solid fa-spinner fa-spin" x-show="loading"></i>
+                    <span x-text="loading ? 'Crediting Tokens...' : 'Simulate Successful Payment'"></span>
+                </button>
+                <button type="button" @click="payModal = false" class="w-full py-2 text-xs text-slate-400 hover:text-slate-200">
+                    Cancel Transaction
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Manual Recharge Modal -->
     <div x-cloak x-show="rechargeModal"
          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
-         x-transition:enter="transition ease-out duration-200"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-150"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0">
-
+         x-transition>
         <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative" @click.outside="rechargeModal = false">
             <button @click="rechargeModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-white">
                 <i class="fa-solid fa-xmark text-lg"></i>
@@ -274,7 +472,6 @@
 
             <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-center mb-4">
                 <div class="w-40 h-40 bg-white rounded-lg mx-auto flex items-center justify-center p-2 mb-3 shadow">
-                    <!-- UPI QR Placeholder -->
                     <div class="text-center">
                         <i class="fa-solid fa-qrcode text-6xl text-slate-800 mb-1"></i>
                         <span class="block text-[10px] font-bold text-slate-600">Scan to Pay via UPI</span>
@@ -305,4 +502,7 @@
         </div>
     </div>
 </div>
+
+<!-- Razorpay Official Checkout SDK -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 @endsection

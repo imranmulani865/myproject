@@ -5,62 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'AI Shorts Creator') }} - Long Video to Viral Shorts</title>
-    <script>
-        (() => {
-            const root = document.documentElement;
-            root.dataset.door = 'closed';
-
-            let doorStarted = false;
-
-            function startGrandDoorSequence() {
-                if (doorStarted) return;
-                doorStarted = true;
-
-                const portal = document.getElementById('grand-door-portal');
-                if (!portal) return;
-
-                // Ensure visible
-                portal.style.display = 'flex';
-                portal.style.opacity = '1';
-
-                // Phase 1: Keep doors closed for 700ms so user clearly sees the grand doors & lock
-                setTimeout(() => {
-                    portal.classList.add('doors-unlocking');
-                    const hudText = portal.querySelector('.hud-status-text');
-                    if (hudText) {
-                        hudText.textContent = 'ACCESS GRANTED • OPENING GATES';
-                    }
-                }, 700);
-
-                // Phase 2: Swing doors open wide in 3D
-                setTimeout(() => {
-                    portal.classList.add('doors-open');
-                    root.dataset.door = 'opened';
-                }, 1200);
-
-                // Phase 3: Fade out portal overlay
-                setTimeout(() => {
-                    portal.classList.add('doors-hidden');
-                }, 2900);
-
-                // Phase 4: Completely remove portal overlay from document flow
-                setTimeout(() => {
-                    portal.style.display = 'none';
-                    portal.style.pointerEvents = 'none';
-                }, 3700);
-            }
-
-            if (document.readyState === 'complete') {
-                setTimeout(startGrandDoorSequence, 100);
-            } else {
-                window.addEventListener('load', () => {
-                    setTimeout(startGrandDoorSequence, 150);
-                });
-                // Reliable fallback: in case external CDNs/fonts delay window.load
-                setTimeout(startGrandDoorSequence, 1200);
-            }
-        })();
-    </script>
     <!-- Local / Fallback Tailwind CSS Browser Engine -->
     <script src="{{ asset('js/tailwindcss.js') }}"></script>
     <script>
@@ -182,464 +126,338 @@
             outline: 2px solid #4a42c6;
             outline-offset: 3px;
         }
+
         /* ===================================================
-           3D GRAND VAULT / CINEMATIC DOUBLE DOOR OPENING
+           3D BOOK / CREATOR FOLIO OPENING ANIMATION (3s Hold)
            =================================================== */
-        .door-portal-wrap {
-            position: fixed !important;
-            inset: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            z-index: 99999999 !important;
-            background: transparent !important;
-            overflow: hidden !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            perspective: 1200px !important;
-            perspective-origin: center center !important;
-            pointer-events: all;
-            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
-        }
-
-        .door-portal-wrap.doors-hidden {
-            opacity: 0 !important;
-            visibility: hidden !important;
-            pointer-events: none !important;
-        }
-
-        /* 3D Perspective Stage */
-        .door-perspective-stage {
-            position: absolute;
+        .book-opening-stage {
+            position: fixed;
             inset: 0;
             width: 100vw;
             height: 100vh;
-            perspective: 1200px;
+            z-index: 999999;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1600px;
             perspective-origin: center center;
-            transform-style: preserve-3d;
-            pointer-events: none;
+            animation: book-stage-vanish 0.45s ease 4.2s forwards;
+            cursor: pointer;
         }
 
-        /* Left & Right Door Leaves */
-        .door-leaf {
+        @keyframes book-stage-vanish {
+            0% { opacity: 1; visibility: visible; }
+            100% { opacity: 0; visibility: hidden; display: none; }
+        }
+
+        /* Fast skip mode if clicked */
+        .book-opening-stage.book-opening-fast {
+            animation: book-stage-vanish 0.3s ease 0.35s forwards !important;
+        }
+        .book-opening-stage.book-opening-fast .book-leaf-left {
+            animation: book-swing-left 0.45s cubic-bezier(0.25, 1, 0.35, 1) 0s forwards !important;
+        }
+        .book-opening-stage.book-opening-fast .book-leaf-right {
+            animation: book-swing-right 0.45s cubic-bezier(0.25, 1, 0.35, 1) 0s forwards !important;
+        }
+        .book-opening-stage.book-opening-fast .book-spine-glow {
+            opacity: 0 !important;
+            transition: opacity 0.2s !important;
+        }
+
+        /* Left Book Leaf (Holds for 3s then opens to left in 3D) */
+        .book-leaf-left {
             position: absolute;
             top: 0;
-            width: 50.2vw;
-            height: 100vh;
-            transform-style: preserve-3d;
-            will-change: transform;
-            transition: transform 1.6s cubic-bezier(0.25, 1, 0.35, 1);
-            box-shadow: 0 0 90px rgba(0, 0, 0, 0.98);
-        }
-
-        .door-leaf-left {
             left: 0;
+            width: 50.1vw;
+            height: 100vh;
             transform-origin: left center;
-            transform: rotateY(0deg);
+            transform-style: preserve-3d;
+            background: linear-gradient(135deg, #090d1a 0%, #111a30 45%, #080c18 100%);
+            border-right: 2px solid rgba(129, 140, 248, 0.75);
+            box-shadow: inset -25px 0 60px rgba(0, 0, 0, 0.9), 0 0 90px rgba(0, 0, 0, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 5vw;
+            animation: book-swing-left 1.15s cubic-bezier(0.25, 1, 0.35, 1) 3.0s forwards;
+            will-change: transform;
         }
 
-        .door-leaf-right {
+        /* Right Book Leaf (Holds for 3s then opens to right in 3D) */
+        .book-leaf-right {
+            position: absolute;
+            top: 0;
             right: 0;
+            width: 50.1vw;
+            height: 100vh;
             transform-origin: right center;
-            transform: rotateY(0deg);
+            transform-style: preserve-3d;
+            background: linear-gradient(225deg, #090d1a 0%, #111a30 45%, #080c18 100%);
+            border-left: 2px solid rgba(129, 140, 248, 0.75);
+            box-shadow: inset 25px 0 60px rgba(0, 0, 0, 0.9), 0 0 90px rgba(0, 0, 0, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding-left: 5vw;
+            animation: book-swing-right 1.15s cubic-bezier(0.25, 1, 0.35, 1) 3.0s forwards;
+            will-change: transform;
         }
 
-        /* Swing Open 3D States */
-        #grand-door-portal.doors-open .door-leaf-left {
-            transform: rotateY(-105deg);
+        @keyframes book-swing-left {
+            0% { transform: rotateY(0deg); }
+            15% { transform: rotateY(-3deg); }
+            100% { transform: rotateY(-112deg); }
         }
 
-        #grand-door-portal.doors-open .door-leaf-right {
-            transform: rotateY(105deg);
+        @keyframes book-swing-right {
+            0% { transform: rotateY(0deg); }
+            15% { transform: rotateY(3deg); }
+            100% { transform: rotateY(112deg); }
         }
 
-        /* Door Panel Faces with Obsidian Metallic Finish */
-        .door-panel-face {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, #070a12 0%, #0d1527 35%, #080c17 100%);
-            border-top: 3px solid rgba(99, 102, 241, 0.45);
-            border-bottom: 3px solid rgba(99, 102, 241, 0.45);
-            overflow: hidden;
+        /* Book Cover Panels & Borders */
+        .book-cover-panel {
+            width: min(85%, 360px);
+            padding: 24px;
+            background: rgba(15, 23, 42, 0.55);
+            border-radius: 18px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.08), 0 10px 30px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
         }
 
-        .door-leaf-left .door-panel-face {
-            border-right: 2px solid rgba(129, 140, 248, 0.9);
-            box-shadow: inset -24px 0 50px rgba(0, 0, 0, 0.85), inset 0 0 60px rgba(99, 102, 241, 0.2);
-        }
-
-        .door-leaf-right .door-panel-face {
-            border-left: 2px solid rgba(129, 140, 248, 0.9);
-            box-shadow: inset 24px 0 50px rgba(0, 0, 0, 0.85), inset 0 0 60px rgba(99, 102, 241, 0.2);
-        }
-
-        /* Futuristic Carbon Cyber Grid Texture */
-        .door-metal-grid {
-            position: absolute;
-            inset: 0;
-            background-image: 
-                radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.12) 0%, transparent 70%),
-                linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-            background-size: 100% 100%, 40px 40px, 40px 40px;
-            opacity: 0.95;
-        }
-
-        /* Inset Heavy Metal Structural Boxes */
-        .door-inset-box {
-            position: absolute;
-            left: 8%;
-            right: 8%;
-            border: 1px solid rgba(148, 163, 184, 0.18);
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.45) 0%, rgba(15, 23, 42, 0.75) 100%);
+        .book-cover-border {
+            border: 1px dashed rgba(165, 180, 252, 0.25);
             border-radius: 12px;
-            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.06), 0 10px 32px rgba(0, 0, 0, 0.6);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 20px;
+            padding: 20px 14px;
         }
 
-        .door-inset-box.box-top { top: 7%; height: 22%; }
-        .door-inset-box.box-mid { top: 35%; height: 28%; }
-        .door-inset-box.box-btm { bottom: 7%; height: 22%; }
-
-        .box-tag {
-            font-family: ui-monospace, monospace;
-            font-size: 11px;
-            font-weight: 800;
-            color: rgba(165, 180, 252, 0.85);
-            letter-spacing: 0.2em;
-        }
-
-        .tech-lines {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-            width: 60%;
-        }
-
-        .tech-lines span {
-            display: block;
-            height: 2px;
-            background: rgba(99, 102, 241, 0.35);
-            border-radius: 2px;
-        }
-        .tech-lines span:nth-child(2) { width: 80%; background: rgba(168, 85, 247, 0.4); }
-        .tech-lines span:nth-child(3) { width: 45%; }
-
-        /* Neon Laser Track running vertically near the center */
-        .door-energy-track {
+        /* Center Spine Laser Glow during 3s hold and burst */
+        .book-spine-glow {
             position: absolute;
             top: 0;
             bottom: 0;
-            width: 2px;
-            background: linear-gradient(to bottom, transparent 0%, #6366f1 20%, #a855f7 50%, #ec4899 80%, transparent 100%);
-            box-shadow: 0 0 14px #6366f1, 0 0 28px #a855f7;
+            left: 50%;
+            width: 4px;
+            transform: translateX(-50%);
+            background: linear-gradient(180deg, transparent, #818cf8 30%, #ec4899 70%, transparent);
+            box-shadow: 0 0 30px #818cf8, 0 0 60px #ec4899;
+            z-index: 20;
+            pointer-events: none;
+            animation: spine-pulse-hold 4.2s ease-out forwards;
         }
 
-        .door-leaf-left .door-energy-track { right: 28px; }
-        .door-leaf-right .door-energy-track { left: 28px; }
+        @keyframes spine-pulse-hold {
+            0% { opacity: 0; transform: translateX(-50%) scaleY(0.1); }
+            8% { opacity: 1; transform: translateX(-50%) scaleY(1); width: 4px; box-shadow: 0 0 25px #818cf8; }
+            65% { opacity: 0.85; width: 4px; box-shadow: 0 0 20px #818cf8, 0 0 40px #ec4899; }
+            72% { opacity: 1; width: 6px; box-shadow: 0 0 45px #818cf8, 0 0 90px #ec4899; } /* At 3s opening burst */
+            92% { opacity: 0.7; width: 2px; }
+            100% { opacity: 0; transform: translateX(-50%) scaleY(1); }
+        }
 
-        /* Industrial Strut Handles */
-        .door-grip-column {
+        /* Center Circular Seal Split */
+        .book-center-crest-half {
             position: absolute;
             top: 50%;
+            width: 48px;
+            height: 96px;
             transform: translateY(-50%);
-            width: 16px;
-            height: 38%;
-            background: linear-gradient(90deg, #1e293b 0%, #475569 50%, #0f172a 100%);
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            z-index: 5;
-        }
-
-        .door-leaf-left .door-grip-column { right: 52px; }
-        .door-leaf-right .door-grip-column { left: 52px; }
-
-        .grip-rivet {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #94a3b8;
-            box-shadow: inset 0 1px 2px #fff;
-        }
-
-        .grip-core {
-            width: 2px;
-            height: 72%;
-            background: #6366f1;
-            box-shadow: 0 0 10px #6366f1;
-        }
-
-        /* Central Circular Vault Lock (Split perfectly across both doors) */
-        .door-lock-half {
-            position: absolute;
-            top: 50%;
-            width: 80px;
-            height: 160px;
-            margin-top: -80px;
             overflow: hidden;
+            z-index: 15;
             pointer-events: none;
-            z-index: 25;
         }
 
-        .lock-half-left { right: 0; }
-        .lock-half-right { left: 0; }
+        .book-center-crest-half.left-crest {
+            right: 0;
+        }
 
-        /* The full circle rendered in overflow position */
-        .lock-circle-full {
+        .book-center-crest-half.right-crest {
+            left: 0;
+        }
+
+        .crest-circle {
             position: absolute;
             top: 0;
-            width: 160px;
-            height: 160px;
+            width: 96px;
+            height: 96px;
             border-radius: 50%;
-            background: radial-gradient(circle at center, #1e1b4b 0%, #0f172a 65%, #020617 100%);
-            border: 3px solid rgba(129, 140, 248, 0.9);
-            box-shadow: 0 0 40px rgba(99, 102, 241, 0.75), inset 0 0 30px rgba(99, 102, 241, 0.55);
+            background: #0f172a;
+            border: 2px solid #818cf8;
+            box-shadow: 0 0 25px rgba(129, 140, 248, 0.6);
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .lock-half-left .lock-circle-full { left: 0; }
-        .lock-half-right .lock-circle-full { left: -80px; }
-
-        .lock-ring-dashed {
-            position: absolute;
-            inset: 10px;
-            border: 2px dashed rgba(165, 180, 252, 0.6);
-            border-radius: 50%;
-            animation: ring-rotate 14s linear infinite;
+        .left-crest .crest-circle {
+            right: 0;
         }
 
-        @keyframes ring-rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        .right-crest .crest-circle {
+            left: 0;
         }
 
-        .lock-center-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            filter: drop-shadow(0 0 14px #818cf8);
-            animation: core-glow 2s infinite ease-in-out;
-        }
-
-        @keyframes core-glow {
-            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px #818cf8); }
-            50% { transform: scale(1.12); filter: drop-shadow(0 0 26px #c084fc); }
-        }
-
-        /* Center Light Beam Burst */
-        .door-light-beam {
-            position: absolute;
+        /* Top Cyber Laser Sweeps as Book Opens */
+        .opening-laser-bar {
+            position: fixed;
             top: 0;
-            bottom: 0;
-            left: 50%;
-            width: 3px;
-            transform: translateX(-50%);
-            background: linear-gradient(180deg, #818cf8 0%, #ffffff 50%, #c084fc 100%);
-            box-shadow: 0 0 25px 10px rgba(129, 140, 248, 0.85), 0 0 60px 25px rgba(192, 132, 252, 0.5);
-            opacity: 0.9;
-            z-index: 30;
+            left: 0;
+            height: 3px;
+            width: 100%;
+            z-index: 99999;
             pointer-events: none;
-            transition: opacity 0.5s ease, width 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+            background: linear-gradient(90deg, #4f46e5 0%, #a855f7 40%, #ec4899 75%, #06b6d4 100%);
+            background-size: 200% 100%;
+            box-shadow: 0 0 14px rgba(139, 92, 246, 0.85), 0 0 25px rgba(236, 72, 153, 0.5);
+            animation: laser-sweep 0.85s cubic-bezier(0.4, 0, 0.2, 1) 3.1s forwards;
         }
 
-        #grand-door-portal.doors-unlocking .door-light-beam {
-            opacity: 1;
-            width: 14px;
-            box-shadow: 0 0 45px 25px rgba(255, 255, 255, 0.98), 0 0 120px 60px rgba(129, 140, 248, 0.85), 0 0 220px 110px rgba(192, 132, 252, 0.7);
+        @keyframes laser-sweep {
+            0% { width: 0%; opacity: 1; }
+            65% { width: 88%; opacity: 1; }
+            90% { width: 100%; opacity: 0.9; }
+            100% { width: 100%; opacity: 0; transform: translateY(-3px); }
         }
 
-        #grand-door-portal.doors-open .door-light-beam {
-            opacity: 0;
-            width: 100vw;
-            transition: opacity 0.7s ease 0.3s, width 0.9s ease;
-        }
-
-        /* Center HUD Status Badge */
-        .door-hud-badge {
-            position: absolute;
-            bottom: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 40;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            background: rgba(15, 23, 42, 0.92);
-            backdrop-filter: blur(16px);
-            padding: 10px 28px;
-            border-radius: 999px;
-            border: 1px solid rgba(129, 140, 248, 0.5);
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85), 0 0 30px rgba(99, 102, 241, 0.4);
-            pointer-events: none;
-            transition: opacity 0.4s ease, transform 0.4s ease;
-        }
-
-        #grand-door-portal.doors-open .door-hud-badge {
-            opacity: 0;
-            transform: translateX(-50%) scale(0.85);
-        }
-
-        .hud-brand-title {
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 0.25em;
-            text-transform: uppercase;
-            color: #a5b4fc;
-        }
-
-        .hud-status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            font-weight: 700;
-            color: #ffffff;
-            font-family: ui-monospace, monospace;
-        }
-
-        .hud-status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #34d399;
-            box-shadow: 0 0 10px #34d399;
-            animation: dot-pulse 1s infinite alternate;
-        }
-
-        @keyframes dot-pulse {
-            from { opacity: 0.3; }
-            to { opacity: 1; transform: scale(1.25); }
-        }
-
-        /* Page Content Smooth Unveil Zoom */
-        #app-main-content {
+        .site-opening-reveal {
+            animation: page-cinematic-enter 0.9s cubic-bezier(0.16, 1, 0.3, 1) 3.1s forwards;
             will-change: transform, opacity, filter;
-            transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.9s ease, filter 0.9s ease;
         }
 
-        html[data-door='closed'] #app-main-content {
-            transform: scale(0.94);
-            opacity: 0.35;
-            filter: blur(8px);
+        @keyframes page-cinematic-enter {
+            0% {
+                opacity: 0;
+                transform: translateY(16px) scale(0.985);
+                filter: blur(5px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
         }
 
-        html[data-door='opened'] #app-main-content {
-            transform: scale(1);
-            opacity: 1;
-            filter: blur(0);
+        .site-nav-enter {
+            animation: nav-slide-down 0.8s cubic-bezier(0.16, 1, 0.3, 1) 3.1s forwards;
+        }
+
+        @keyframes nav-slide-down {
+            0% { opacity: 0; transform: translateY(-12px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .ambient-glow-bloom {
+            animation: aura-bloom 1.2s cubic-bezier(0.16, 1, 0.3, 1) 3.0s forwards;
+        }
+
+        @keyframes aura-bloom {
+            0% { opacity: 0; transform: scale(0.85); }
+            100% { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased bg-studio-canvas text-studio-ink selection:bg-studio-lavender selection:text-studio-ink" x-data="{ toast: { show: false, message: '' } }">
-    <!-- 3D GRAND VAULT DOUBLE DOOR PORTAL -->
-    <div id="grand-door-portal" class="door-portal-wrap" role="dialog" aria-modal="true" aria-label="Grand Portal Entry">
-        <div class="door-light-beam"></div>
+    <!-- 3D BOOK / FOLIO OPENING EFFECT (Holds 3s then swings open) -->
+    <div id="book-opening-stage" class="book-opening-stage" onclick="openBookNow()" aria-hidden="true" title="Click to skip">
+        <!-- Center Spine Light Beam -->
+        <div class="book-spine-glow"></div>
 
-        <div class="door-perspective-stage">
-            <!-- LEFT DOOR PANEL -->
-            <div class="door-leaf door-leaf-left">
-                <div class="door-panel-face">
-                    <div class="door-metal-grid"></div>
-                    <div class="door-inset-box box-top">
-                        <span class="box-tag">SYS // ALPHA</span>
-                    </div>
-                    <div class="door-inset-box box-mid">
-                        <div class="tech-lines">
-                            <span></span><span></span><span></span>
+        <!-- LEFT BOOK LEAF / COVER -->
+        <div class="book-leaf-left">
+            <div class="book-cover-panel">
+                <div class="book-cover-border">
+                    <div class="flex flex-col items-end gap-2 pr-2 text-right">
+                        <div class="w-11 h-11 rounded-2xl bg-indigo-600/30 border border-indigo-400/50 flex items-center justify-center text-indigo-300 shadow-lg shadow-indigo-500/20">
+                            <i class="fa-solid fa-clapperboard text-lg"></i>
                         </div>
-                    </div>
-                    <div class="door-inset-box box-btm">
-                        <span class="box-tag">PORTAL // GATE 01</span>
-                    </div>
-
-                    <div class="door-energy-track"></div>
-
-                    <div class="door-grip-column">
-                        <span class="grip-rivet"></span>
-                        <span class="grip-core"></span>
-                        <span class="grip-rivet"></span>
-                    </div>
-
-                    <!-- Left Half of Central Lock -->
-                    <div class="door-lock-half lock-half-left">
-                        <div class="lock-circle-full">
-                            <div class="lock-ring-dashed"></div>
-                            <div class="lock-center-icon">
-                                <svg class="lock-svg-bolt" viewBox="0 0 24 24" width="42" height="42">
-                                    <path fill="#818cf8" stroke="#ffffff" stroke-width="0.8" d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                                </svg>
-                            </div>
-                        </div>
+                        <h2 class="text-xl sm:text-2xl font-black tracking-wider text-white">AI SHORTS</h2>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-300">STUDIO FOLIO</span>
                     </div>
                 </div>
             </div>
+            <!-- Half Center Crest -->
+            <div class="book-center-crest-half left-crest">
+                <div class="crest-circle">
+                    <i class="fa-solid fa-wand-magic-sparkles text-indigo-300 text-lg mr-6"></i>
+                </div>
+            </div>
+        </div>
 
-            <!-- RIGHT DOOR PANEL -->
-            <div class="door-leaf door-leaf-right">
-                <div class="door-panel-face">
-                    <div class="door-metal-grid"></div>
-                    <div class="door-inset-box box-top">
-                        <span class="box-tag">VER // 2.4</span>
-                    </div>
-                    <div class="door-inset-box box-mid">
-                        <div class="tech-lines">
-                            <span></span><span></span><span></span>
-                        </div>
-                    </div>
-                    <div class="door-inset-box box-btm">
-                        <span class="box-tag">GEMMA // AI CORE</span>
-                    </div>
-
-                    <div class="door-energy-track"></div>
-
-                    <div class="door-grip-column">
-                        <span class="grip-rivet"></span>
-                        <span class="grip-core"></span>
-                        <span class="grip-rivet"></span>
-                    </div>
-
-                    <!-- Right Half of Central Lock -->
-                    <div class="door-lock-half lock-half-right">
-                        <div class="lock-circle-full">
-                            <div class="lock-ring-dashed"></div>
-                            <div class="lock-center-icon">
-                                <svg class="lock-svg-bolt" viewBox="0 0 24 24" width="42" height="42">
-                                    <path fill="#818cf8" stroke="#ffffff" stroke-width="0.8" d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                                </svg>
-                            </div>
-                        </div>
+        <!-- RIGHT BOOK LEAF / COVER -->
+        <div class="book-leaf-right">
+            <!-- Half Center Crest -->
+            <div class="book-center-crest-half right-crest">
+                <div class="crest-circle">
+                    <i class="fa-solid fa-bolt text-indigo-300 text-lg ml-6"></i>
+                </div>
+            </div>
+            <div class="book-cover-panel">
+                <div class="book-cover-border">
+                    <div class="flex flex-col items-start gap-2 pl-2 text-left">
+                        <span class="px-2 py-0.5 rounded-full bg-indigo-500/20 border border-indigo-400/40 text-indigo-300 text-[9px] font-bold tracking-widest uppercase">
+                            2026 EDITION
+                        </span>
+                        <h2 class="text-xl sm:text-2xl font-black tracking-wider text-white">CREATOR</h2>
+                        <p class="text-[11px] text-slate-400 font-medium">Long to Viral Shorts</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Center HUD Badge -->
-        <div class="door-hud-badge">
-            <div class="hud-brand-title">
-                <i class="fa-solid fa-shield-halved mr-1.5 text-indigo-400"></i>
-                <span>AI SHORTS STUDIO</span>
+        <!-- Interactive Skip Indicator -->
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
+            <button type="button" onclick="openBookNow()" class="px-4 py-1.5 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white/90 text-xs font-semibold backdrop-blur border border-white/20 shadow-2xl transition transform hover:scale-105 cursor-pointer flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span>
+                <span>Opening in 3s...</span>
+                <span class="text-indigo-300 text-[11px]">| Click to Skip ➔</span>
+            </button>
+        </div>
+    </div>
+            <!-- Half Center Crest -->
+            <div class="book-center-crest-half left-crest">
+                <div class="crest-circle">
+                    <i class="fa-solid fa-wand-magic-sparkles text-indigo-300 text-lg mr-6"></i>
+                </div>
             </div>
-            <div class="hud-status-indicator">
-                <span class="hud-status-dot"></span>
-                <span class="hud-status-text">INITIALIZING QUANTUM GATE...</span>
+        </div>
+
+        <!-- RIGHT BOOK LEAF / COVER -->
+        <div class="book-leaf-right">
+            <!-- Half Center Crest -->
+            <div class="book-center-crest-half right-crest">
+                <div class="crest-circle">
+                    <i class="fa-solid fa-bolt text-indigo-300 text-lg ml-6"></i>
+                </div>
+            </div>
+            <div class="book-cover-panel">
+                <div class="book-cover-border">
+                    <div class="flex flex-col items-start gap-2 pl-2 text-left">
+                        <span class="px-2 py-0.5 rounded-full bg-indigo-500/20 border border-indigo-400/40 text-indigo-300 text-[9px] font-bold tracking-widest uppercase">
+                            2026 EDITION
+                        </span>
+                        <h2 class="text-xl sm:text-2xl font-black tracking-wider text-white">CREATOR</h2>
+                        <p class="text-[11px] text-slate-400 font-medium">Long to Viral Shorts</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- MAIN PAGE CONTENT WRAPPER -->
-    <div id="app-main-content" class="min-h-screen flex flex-col w-full">
+    <!-- Top Cyber Neon Laser Opening Indicator -->
+    <div class="opening-laser-bar" aria-hidden="true"></div>
+
+    <!-- MAIN PAGE CONTENT WRAPPER WITH CINEMATIC REVEAL -->
+    <div id="app-main-content" class="min-h-screen flex flex-col w-full relative site-opening-reveal">
+        <!-- Ambient Glowing Background Lighting -->
+        <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10 ambient-glow-bloom" aria-hidden="true">
+            <div class="absolute -top-32 -left-32 w-[34rem] h-[34rem] bg-indigo-500/10 rounded-full blur-[110px] animate-pulse"></div>
+            <div class="absolute top-1/4 -right-32 w-[30rem] h-[30rem] bg-pink-500/10 rounded-full blur-[110px]"></div>
+            <div class="absolute bottom-10 left-1/4 w-[36rem] h-[36rem] bg-violet-500/10 rounded-full blur-[120px]"></div>
+        </div>
     <!-- Toast Notification -->
     <div x-cloak x-show="toast.show" 
          x-transition:enter="transition ease-out duration-300"
@@ -654,7 +472,7 @@
     </div>
 
     <!-- Navigation Bar -->
-    <nav class="sticky top-0 z-40 backdrop-blur-xl border-b bg-white/80 border-studio-line/80 shadow-[0_12px_32px_-24px_rgba(48,40,166,0.3)]">
+    <nav class="sticky top-0 z-40 backdrop-blur-xl border-b bg-white/80 border-studio-line/80 shadow-[0_12px_32px_-24px_rgba(48,40,166,0.3)] site-nav-enter">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <!-- Brand / Logo -->
@@ -767,8 +585,9 @@
                         <a href="{{ route('login') }}" class="text-studio-ink hover:text-brand-600 text-xs sm:text-sm font-semibold px-2 sm:px-4 py-2 rounded-xl hover:bg-studio-lavender/50 transition">
                             Sign In
                         </a>
-                        <a href="{{ route('register') }}" class="bg-brand-600 hover:bg-brand-500 text-white text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded-xl shadow-lg shadow-brand-600/25 transition">
-                            Try Free
+                        <a href="{{ route('register') }}" class="bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl shadow-lg shadow-brand-600/30 transition transform hover:-translate-y-0.5 flex items-center gap-1.5">
+                            <span>Get Started Free</span>
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
                         </a>
                     @endauth
                 </div>
@@ -828,5 +647,17 @@
     </div><!-- /#app-main-content -->
 
     @stack('scripts')
+    <script>
+        function openBookNow() {
+            const stage = document.getElementById('book-opening-stage');
+            if (!stage) return;
+            stage.classList.add('book-opening-fast');
+            setTimeout(() => { if (stage) stage.remove(); }, 400);
+        }
+        setTimeout(() => {
+            const stage = document.getElementById('book-opening-stage');
+            if (stage) stage.remove();
+        }, 4800);
+    </script>
 </body>
 </html>

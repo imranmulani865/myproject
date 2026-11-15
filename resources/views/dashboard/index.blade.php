@@ -17,7 +17,7 @@
                 <i class="fa-solid fa-coins text-amber-600" aria-hidden="true"></i>
                 <span>{{ number_format(auth()->user()->tokens) }} Tokens</span>
             </a>
-            <a href="{{ route('projects.create') }}" class="inline-flex min-h-11 items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold px-5 py-3 rounded-xl shadow-lg shadow-brand-600/20 transition-colors">
+            <a href="{{ route('projects.create') }}" class="inline-flex min-h-11 items-center gap-2 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-semibold px-5 py-3 rounded-xl shadow-lg shadow-brand-600/30 transition-all transform hover:-translate-y-0.5">
                 <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
                 <span>Create New Shorts</span>
             </a>
