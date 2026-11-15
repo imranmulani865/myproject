@@ -24,7 +24,20 @@ class VideoProjectController extends Controller
             'title' => ['nullable', 'string', 'max:255'],
             'clip_duration_pref' => ['required', 'in:30,60'],
             'clips_count' => ['required', 'integer', 'min:1', 'max:10'],
+            'mode' => ['required', 'in:dialogue,song'],
         ]);
+
+        $mode = $validated['mode'];
+        $clipsCount = (int) $validated['clips_count'];
+        $tokenRate = ($mode === 'song') ? 15 : 10;
+        $totalTokenCost = $clipsCount * $tokenRate;
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if (! $user->hasTokens($totalTokenCost)) {
+            return back()->withInput()->with('error', "Insufficient Tokens! This project requires {$totalTokenCost} tokens ({$clipsCount} shorts x {$tokenRate} tokens for " . ucfirst($mode) . " Mode), but your wallet only has {$user->tokens} tokens. Please recharge or contact admin.");
+        }
 
         $sourceType = $validated['source_type'];
         $videoFilePath = null;
@@ -58,33 +71,42 @@ class VideoProjectController extends Controller
             'source_url' => $validated['youtube_url'] ?? null,
             'video_file_path' => $videoFilePath,
             'clip_duration_pref' => (int) $validated['clip_duration_pref'],
-            'clips_count' => (int) $validated['clips_count'],
+            'clips_count' => $clipsCount,
+            'mode' => $mode,
+            'tokens_used' => $totalTokenCost,
             'status' => 'pending',
             'progress_step' => 'Queued in background processing queue...',
             'progress_percent' => 0,
         ]);
 
+        // Deduct tokens from user wallet
+        $user->deductTokens($totalTokenCost, "Shorts Generation: {$clipsCount} clips in " . ucfirst($mode) . " Mode", $project->id);
+
         // Dispatch background job to process the video
         ProcessVideoJob::dispatch($project->id);
 
         return redirect()->route('projects.show', $project->id)
-            ->with('success', 'Video submitted successfully! Processing in background queue.');
+            ->with('success', "Project queued successfully! {$totalTokenCost} tokens deducted from your wallet.");
     }
 
     public function show(int $id)
     {
-        $project = VideoProject::where('user_id', Auth::id())
-            ->with('shorts')
-            ->findOrFail($id);
+        $query = VideoProject::with('shorts');
+        if (! Auth::user()->isAdmin()) {
+            $query->where('user_id', Auth::id());
+        }
+        $project = $query->findOrFail($id);
 
         return view('projects.show', compact('project'));
     }
 
     public function status(int $id)
     {
-        $project = VideoProject::where('user_id', Auth::id())
-            ->withCount('shorts')
-            ->findOrFail($id);
+        $query = VideoProject::withCount('shorts');
+        if (! Auth::user()->isAdmin()) {
+            $query->where('user_id', Auth::id());
+        }
+        $project = $query->findOrFail($id);
 
         return response()->json([
             'id' => $project->id,

@@ -13,7 +13,11 @@
                 Your AI Video Studio. Extract 30s/60s viral shorts from long videos with Ollama Gemma.
             </p>
         </div>
-        <div>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('wallet') }}" class="inline-flex items-center gap-2 px-4 py-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 font-bold text-sm hover:bg-amber-500/20 transition">
+                <i class="fa-solid fa-coins text-amber-400"></i>
+                <span>{{ number_format(auth()->user()->tokens) }} Tokens</span>
+            </a>
             <a href="{{ route('projects.create') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white font-semibold px-5 py-3 rounded-2xl shadow-lg shadow-indigo-500/25 transition hover:scale-105">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
                 <span>Create New Shorts</span>

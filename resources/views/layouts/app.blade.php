@@ -76,6 +76,20 @@
                 <!-- Navigation Links -->
                 <div class="flex items-center gap-3">
                     @auth
+                        <!-- Token Wallet Pill -->
+                        <a href="{{ route('wallet') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold hover:bg-amber-500/20 transition group">
+                            <i class="fa-solid fa-coins text-amber-400 group-hover:rotate-12 transition"></i>
+                            <span>{{ auth()->user()->tokens }} <span class="hidden sm:inline">Tokens</span></span>
+                        </a>
+
+                        @if(auth()->user()->isAdmin())
+                            <!-- Admin Panel Badge -->
+                            <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 text-xs font-semibold hover:bg-purple-500/25 transition">
+                                <i class="fa-solid fa-shield-halved text-purple-400"></i>
+                                <span class="hidden sm:inline">Admin</span>
+                            </a>
+                        @endif
+
                         <a href="{{ route('projects.create') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg shadow-indigo-500/20 transition hover:shadow-indigo-500/40">
                             <i class="fa-solid fa-wand-magic-sparkles"></i>
                             <span class="hidden sm:inline">New Short</span>
@@ -113,6 +127,17 @@
                                 <div class="px-4 py-2 border-b border-slate-800 text-xs text-slate-400">
                                     Signed in as <br><span class="font-semibold text-slate-200 truncate block">{{ auth()->user()->email }}</span>
                                 </div>
+                                <a href="{{ route('wallet') }}" class="px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2">
+                                    <i class="fa-solid fa-wallet text-amber-400"></i>
+                                    Token Wallet ({{ auth()->user()->tokens }})
+                                </a>
+                                @if(auth()->user()->isAdmin())
+                                    <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 text-sm text-purple-300 hover:bg-purple-900/20 hover:text-purple-200 flex items-center gap-2">
+                                        <i class="fa-solid fa-shield-halved text-purple-400"></i>
+                                        Admin Panel
+                                    </a>
+                                @endif
+                                <div class="border-t border-slate-800 my-1"></div>
                                 <form method="POST" action="{{ route('logout') }}" class="w-full">
                                     @csrf
                                     <button type="submit" class="w-full text-left px-4 py-2 text-sm text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 flex items-center gap-2">

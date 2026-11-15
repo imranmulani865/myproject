@@ -64,7 +64,7 @@ def log_progress(db_path, project_id, percent, step_msg, status=None, error_msg=
 def get_project_details(db_path, project_id):
     conn = sqlite3.connect(db_path, timeout=30.0)
     cursor = conn.cursor()
-    cursor.execute("SELECT id, user_id, title, source_type, source_url, video_file_path, clip_duration_pref, clips_count FROM video_projects WHERE id = ?", (project_id,))
+    cursor.execute("SELECT id, user_id, title, source_type, source_url, video_file_path, clip_duration_pref, clips_count, mode FROM video_projects WHERE id = ?", (project_id,))
     row = cursor.fetchone()
     conn.close()
     if row:
@@ -77,6 +77,7 @@ def get_project_details(db_path, project_id):
             "video_file_path": row[5],
             "clip_duration_pref": row[6] or 30,
             "clips_count": row[7] or 3,
+            "mode": row[8] or "dialogue",
         }
     return None
 
@@ -745,6 +746,7 @@ def main():
     clip_duration_pref = project['clip_duration_pref'] or 30
     clips_count = project['clips_count'] or 3
     video_title = project['title'] or "Untitled Video"
+    project_mode = project.get('mode', 'dialogue')
 
     temp_dir = os.path.join("storage", "app", "temp", f"project_{project_id}")
     os.makedirs(temp_dir, exist_ok=True)
@@ -808,10 +810,17 @@ def main():
         conn.commit()
         conn.close()
 
-        # Check if video is a Song/Music video
-        is_song = is_song_or_music(video_title, raw_transcript_items)
-        if is_song:
-            print(f"Music/Song detected for '{video_title}'. Activating Mukhda (Chorus) Peak Extraction mode.")
+        # Check if video is a Song/Music video or Dialogue/Speech video based on project mode
+        if project_mode == "song":
+            is_song = True
+            print(f"User selected Song/Music Mode for '{video_title}'. Activating Mukhda (Chorus) Peak Extraction mode.")
+        elif project_mode == "dialogue":
+            is_song = False
+            print(f"User selected Dialogue/Speech Mode for '{video_title}'. Activating Natural Sentence & Hook Boundary mode.")
+        else:
+            is_song = is_song_or_music(video_title, raw_transcript_items)
+            if is_song:
+                print(f"Auto-detected Music/Song for '{video_title}'. Activating Mukhda (Chorus) Peak Extraction mode.")
 
         # Reconstruct transcript items
         reconstructed_content = []

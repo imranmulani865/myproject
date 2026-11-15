@@ -20,6 +20,8 @@ class VideoProject extends Model
         'duration_seconds',
         'clip_duration_pref',
         'clips_count',
+        'mode',
+        'tokens_used',
         'status',
         'progress_step',
         'progress_percent',

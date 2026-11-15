@@ -22,6 +22,15 @@
                     {{ $project->source_type }}
                 </span>
                 <span>•</span>
+                <span class="inline-flex items-center gap-1 font-bold text-[10px] px-2 py-0.5 rounded-full {{ $project->mode === 'song' ? 'bg-pink-500/10 text-pink-400 border border-pink-500/30' : 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/30' }}">
+                    <i class="{{ $project->mode === 'song' ? 'fa-solid fa-music' : 'fa-solid fa-microphone' }}"></i>
+                    {{ ucfirst($project->mode ?? 'dialogue') }} Mode
+                </span>
+                @if($project->tokens_used > 0)
+                    <span>•</span>
+                    <span class="text-amber-400 text-xs font-semibold"><i class="fa-solid fa-coins mr-1 text-[10px]"></i>{{ $project->tokens_used }} Tokens</span>
+                @endif
+                <span>•</span>
                 <span class="text-slate-300"><i class="fa-regular fa-clock mr-1 text-slate-400"></i>Target: {{ $project->clip_duration_pref }}s clips</span>
                 <span>•</span>
                 <span>Total Video: {{ $project->duration_seconds ? sprintf('%02d:%02d', floor($project->duration_seconds / 60), $project->duration_seconds % 60) : 'N/A' }}</span>

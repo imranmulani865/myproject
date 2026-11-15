@@ -39,4 +39,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read_all');
+
+    // Token Wallet
+    Route::get('/wallet', [DashboardController::class, 'wallet'])->name('wallet');
+});
+
+// Admin routes (Protected by auth and admin middleware)
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    Route::get('/', [\App\Http\Controllers\AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/users', [\App\Http\Controllers\AdminController::class, 'users'])->name('users');
+    Route::post('/users/{user}/status', [\App\Http\Controllers\AdminController::class, 'updateUserStatus'])->name('users.status');
+    Route::post('/users/{user}/tokens', [\App\Http\Controllers\AdminController::class, 'adjustTokens'])->name('users.tokens');
+    Route::get('/projects', [\App\Http\Controllers\AdminController::class, 'projects'])->name('projects');
+    Route::get('/transactions', [\App\Http\Controllers\AdminController::class, 'transactions'])->name('transactions');
 });

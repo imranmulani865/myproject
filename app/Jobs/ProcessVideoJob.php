@@ -71,6 +71,17 @@ class ProcessVideoJob implements ShouldQueue
                         'error_message' => substr($err, 0, 1000),
                     ]);
                 }
+
+                // Automatic token refund on failure
+                if ($project->tokens_used > 0 && $project->user) {
+                    $project->user->addTokens(
+                        $project->tokens_used,
+                        "Automatic refund for failed project #{$project->id}",
+                        null,
+                        'refund'
+                    );
+                    $project->update(['tokens_used' => 0]);
+                }
             } else {
                 Log::info("ProcessVideoJob: Finished successfully for project {$this->projectId}");
             }
@@ -82,6 +93,17 @@ class ProcessVideoJob implements ShouldQueue
                 'progress_step' => 'Error: ' . $e->getMessage(),
                 'error_message' => $e->getMessage(),
             ]);
+
+            // Automatic token refund on failure
+            if ($project->tokens_used > 0 && $project->user) {
+                $project->user->addTokens(
+                    $project->tokens_used,
+                    "Automatic refund for failed project #{$project->id}",
+                    null,
+                    'refund'
+                );
+                $project->update(['tokens_used' => 0]);
+            }
         }
     }
 }
