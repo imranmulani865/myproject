@@ -5,8 +5,8 @@
     <div class="grid overflow-hidden rounded-[2rem] border border-studio-line bg-studio-surface/90 shadow-[0_24px_90px_rgba(48,40,166,0.12)] backdrop-blur-xl lg:grid-cols-2">
         <div class="p-6 sm:p-10 lg:p-14">
             <div class="mb-10 flex items-center gap-3">
-                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-studio-lavender text-brand-600">
-                    <i class="fa-solid fa-clapperboard" aria-hidden="true"></i>
+                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-[#FF0000] text-white shadow-md shadow-red-600/30">
+                    <i class="fa-brands fa-youtube text-xl" aria-hidden="true"></i>
                 </div>
                 <div>
                     <p class="text-sm font-semibold text-studio-ink">Creator workspace</p>
@@ -64,7 +64,7 @@
                            placeholder="Repeat your password">
                 </div>
 
-                <button type="submit" class="min-h-12 w-full rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-brand-600/30 transition-all transform hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 flex items-center justify-center gap-2">
+                <button type="submit" class="min-h-12 w-full rounded-xl bg-[#FF0000] hover:bg-[#CC0000] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-red-600/30 transition-all transform hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 flex items-center justify-center gap-2">
                     <span>Create account & Start Free</span>
                     <i class="fa-solid fa-arrow-right text-xs"></i>
                 </button>
@@ -86,13 +86,13 @@
             <div class="relative mx-auto my-10 h-72 w-full max-w-sm" aria-hidden="true">
                 <div class="absolute left-0 top-16 w-64 -rotate-6 overflow-hidden rounded-2xl border border-studio-line bg-studio-surface shadow-xl">
                     <div class="flex aspect-video items-center justify-center bg-gradient-to-br from-studio-lavender via-studio-canvas to-studio-peach">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-brand-600 text-white shadow-lg shadow-brand-600/20"><i class="fa-solid fa-play text-xs"></i></div>
+                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-[#FF0000] text-white shadow-lg shadow-red-600/30"><i class="fa-solid fa-play text-xs"></i></div>
                     </div>
                     <div class="flex items-center justify-between px-4 py-3 text-xs text-studio-muted"><span>Long video</span><span>16:9</span></div>
                 </div>
                 <div class="absolute right-2 top-0 w-36 rotate-6 overflow-hidden rounded-[1.5rem] border-[5px] border-studio-surface bg-studio-ink shadow-2xl">
                     <div class="relative flex aspect-[9/16] items-center justify-center bg-gradient-to-b from-brand-400 via-brand-500 to-brand-700">
-                        <div class="absolute left-2 top-3 rounded-md bg-studio-lime px-1.5 py-1 text-[9px] font-extrabold text-studio-ink">9:16 short</div>
+                        <div class="absolute left-2 top-3 rounded-md bg-[#FF0000] px-1.5 py-1 text-[9px] font-extrabold text-white">9:16 short</div>
                         <i class="fa-solid fa-play text-xl text-white/90"></i>
                         <div class="absolute inset-x-3 bottom-4 rounded-md bg-studio-ink/70 px-2 py-1 text-center text-[10px] font-semibold text-white">Ready for the feed</div>
                     </div>

@@ -16,38 +16,33 @@
     </script>
     <style type="text/tailwindcss">
         @theme {
-            --color-studio-canvas: #f5f7ff;
+            --color-studio-canvas: #f9f9f9;
             --color-studio-surface: #ffffff;
-            --color-studio-ink: #151b45;
-            --color-studio-muted: #5f6a87;
-            --color-studio-line: #dce3f2;
-            --color-studio-lavender: #dde4ff;
-            --color-studio-peach: #ffe8db;
-            --color-studio-lime: #c8ff42;
+            --color-studio-ink: #0f0f0f;
+            --color-studio-muted: #606060;
+            --color-studio-line: #e5e5e5;
+            --color-studio-lavender: #fee2e2;
+            --color-studio-peach: #ffe4e6;
+            --color-studio-lime: #ff0000;
 
-            --color-brand-200: #e3e3ff;
-            --color-brand-300: #b8b7f5;
-            --color-brand-400: #807ce7;
-            --color-brand-500: #4a42c6;
-            --color-brand-600: #3028a6;
-            --color-brand-700: #26207f;
-            --color-brand-800: #1b175f;
-            --color-brand-950: #121139;
+            --color-brand-100: #fee2e2;
+            --color-brand-200: #fecaca;
+            --color-brand-300: #fca5a5;
+            --color-brand-400: #f87171;
+            --color-brand-500: #ef4444;
+            --color-brand-600: #ff0000;
+            --color-brand-700: #cc0000;
+            --color-brand-800: #990000;
+            --color-brand-900: #7f1d1d;
+            --color-brand-950: #450a0a;
 
-            --color-ocean-200: #e6e4ff;
-            --color-ocean-300: #d1ceff;
-            --color-ocean-400: #a9a4f1;
-            --color-ocean-500: #6b63c4;
-            --color-ocean-600: #5149a6;
-            --color-ocean-700: #3d377f;
-            --color-ocean-950: #1a1942;
+            --color-ocean-500: #ff0000;
+            --color-ocean-600: #cc0000;
+            --color-ocean-700: #990000;
 
-            --color-aqua-300: #efe4ff;
-            --color-aqua-400: #cbb8f4;
-            --color-aqua-500: #7765bd;
-            --color-aqua-600: #5d4ea1;
-            --color-aqua-700: #493c7f;
-            --color-aqua-950: #241a45;
+            --color-aqua-500: #ff0000;
+            --color-aqua-600: #cc0000;
+            --color-aqua-700: #990000;
         }
     </style>
     <script>
@@ -58,36 +53,25 @@
                 extend: {
                     colors: {
                         studio: {
-                            canvas: '#f5f7ff',
+                            canvas: '#f9f9f9',
                             surface: '#ffffff',
-                            ink: '#151b45',
-                            muted: '#5f6a87',
-                            line: '#dce3f2',
-                            lavender: '#dde4ff',
-                            peach: '#ffe8db',
-                            lime: '#c8ff42',
-                        },
-                        slate: {
-                            100: '#f1f7fa',
-                            200: '#e3edf2',
-                            300: '#d0dee5',
-                            400: '#afc3ce',
-                            500: '#829aa7',
-                            600: '#637c8b',
-                            700: '#3a5262',
-                            800: '#203847',
-                            900: '#102532',
-                            950: '#071923',
+                            ink: '#0f0f0f',
+                            muted: '#606060',
+                            line: '#e5e5e5',
+                            lavender: '#fee2e2',
+                            peach: '#ffe4e6',
+                            lime: '#ff0000',
                         },
                         brand: {
-                            200: '#e3e3ff',
-                            300: '#b8b7f5',
-                            400: '#807ce7',
-                            500: '#4a42c6',
-                            600: '#3028a6',
-                            700: '#26207f',
-                            800: '#1b175f',
-                            950: '#121139',
+                            100: '#fee2e2',
+                            200: '#fecaca',
+                            300: '#fca5a5',
+                            400: '#f87171',
+                            500: '#ef4444',
+                            600: '#ff0000',
+                            700: '#cc0000',
+                            800: '#990000',
+                            950: '#450a0a',
                         },
                         ocean: {
                             200: '#e6e4ff',
@@ -128,7 +112,7 @@
         }
 
         /* ===================================================
-           3D BOOK / CREATOR FOLIO OPENING ANIMATION (3s Hold)
+           YOUTUBE 3D CREATOR BOOK OPENING (With Proper Images & 3s Hold)
            =================================================== */
         .book-opening-stage {
             position: fixed;
@@ -143,6 +127,7 @@
             perspective: 1600px;
             perspective-origin: center center;
             animation: book-stage-vanish 0.45s ease 4.2s forwards;
+            background: #0f0f0f;
             cursor: pointer;
         }
 
@@ -166,7 +151,7 @@
             transition: opacity 0.2s !important;
         }
 
-        /* Left Book Leaf (Holds for 3s then opens to left in 3D) */
+        /* Left Book Leaf (MrBeast Short Card Cover) */
         .book-leaf-left {
             position: absolute;
             top: 0;
@@ -175,18 +160,18 @@
             height: 100vh;
             transform-origin: left center;
             transform-style: preserve-3d;
-            background: linear-gradient(135deg, #090d1a 0%, #111a30 45%, #080c18 100%);
-            border-right: 2px solid rgba(129, 140, 248, 0.75);
-            box-shadow: inset -25px 0 60px rgba(0, 0, 0, 0.9), 0 0 90px rgba(0, 0, 0, 0.95);
+            background: linear-gradient(135deg, #0a0a0a 0%, #171717 50%, #0f0f0f 100%);
+            border-right: 2px solid rgba(255, 0, 0, 0.85);
+            box-shadow: inset -30px 0 70px rgba(0, 0, 0, 0.95), 0 0 100px rgba(0, 0, 0, 0.98);
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            padding-right: 5vw;
+            padding-right: 4vw;
             animation: book-swing-left 1.15s cubic-bezier(0.25, 1, 0.35, 1) 3.0s forwards;
             will-change: transform;
         }
 
-        /* Right Book Leaf (Holds for 3s then opens to right in 3D) */
+        /* Right Book Leaf (Casey Neistat Short Card Cover) */
         .book-leaf-right {
             position: absolute;
             top: 0;
@@ -195,13 +180,13 @@
             height: 100vh;
             transform-origin: right center;
             transform-style: preserve-3d;
-            background: linear-gradient(225deg, #090d1a 0%, #111a30 45%, #080c18 100%);
-            border-left: 2px solid rgba(129, 140, 248, 0.75);
-            box-shadow: inset 25px 0 60px rgba(0, 0, 0, 0.9), 0 0 90px rgba(0, 0, 0, 0.95);
+            background: linear-gradient(225deg, #0a0a0a 0%, #171717 50%, #0f0f0f 100%);
+            border-left: 2px solid rgba(255, 0, 0, 0.85);
+            box-shadow: inset 30px 0 70px rgba(0, 0, 0, 0.95), 0 0 100px rgba(0, 0, 0, 0.98);
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            padding-left: 5vw;
+            padding-left: 4vw;
             animation: book-swing-right 1.15s cubic-bezier(0.25, 1, 0.35, 1) 3.0s forwards;
             will-change: transform;
         }
@@ -218,21 +203,15 @@
             100% { transform: rotateY(112deg); }
         }
 
-        /* Book Cover Panels & Borders */
-        .book-cover-panel {
-            width: min(85%, 360px);
-            padding: 24px;
-            background: rgba(15, 23, 42, 0.55);
-            border-radius: 18px;
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.08), 0 10px 30px rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(10px);
-        }
-
-        .book-cover-border {
-            border: 1px dashed rgba(165, 180, 252, 0.25);
-            border-radius: 12px;
-            padding: 20px 14px;
+        /* Framed Video Image Art on Covers */
+        .book-cover-card {
+            width: min(85%, 340px);
+            background: #181818;
+            border-radius: 20px;
+            border: 2px solid rgba(255, 0, 0, 0.35);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 0, 0, 0.15);
+            overflow: hidden;
+            position: relative;
         }
 
         /* Center Spine Laser Glow during 3s hold and burst */
@@ -243,8 +222,8 @@
             left: 50%;
             width: 4px;
             transform: translateX(-50%);
-            background: linear-gradient(180deg, transparent, #818cf8 30%, #ec4899 70%, transparent);
-            box-shadow: 0 0 30px #818cf8, 0 0 60px #ec4899;
+            background: linear-gradient(180deg, transparent, #ff0000 25%, #ff4e45 75%, transparent);
+            box-shadow: 0 0 35px #ff0000, 0 0 70px #cc0000;
             z-index: 20;
             pointer-events: none;
             animation: spine-pulse-hold 4.2s ease-out forwards;
@@ -252,19 +231,19 @@
 
         @keyframes spine-pulse-hold {
             0% { opacity: 0; transform: translateX(-50%) scaleY(0.1); }
-            8% { opacity: 1; transform: translateX(-50%) scaleY(1); width: 4px; box-shadow: 0 0 25px #818cf8; }
-            65% { opacity: 0.85; width: 4px; box-shadow: 0 0 20px #818cf8, 0 0 40px #ec4899; }
-            72% { opacity: 1; width: 6px; box-shadow: 0 0 45px #818cf8, 0 0 90px #ec4899; } /* At 3s opening burst */
+            8% { opacity: 1; transform: translateX(-50%) scaleY(1); width: 4px; box-shadow: 0 0 25px #ff0000; }
+            65% { opacity: 0.85; width: 4px; box-shadow: 0 0 20px #ff0000, 0 0 40px #cc0000; }
+            72% { opacity: 1; width: 6px; box-shadow: 0 0 50px #ff0000, 0 0 100px #ff4e45; }
             92% { opacity: 0.7; width: 2px; }
             100% { opacity: 0; transform: translateX(-50%) scaleY(1); }
         }
 
-        /* Center Circular Seal Split */
+        /* Center Circular Seal Split - Iconic YouTube Play Button */
         .book-center-crest-half {
             position: absolute;
             top: 50%;
-            width: 48px;
-            height: 96px;
+            width: 44px;
+            height: 88px;
             transform: translateY(-50%);
             overflow: hidden;
             z-index: 15;
@@ -279,29 +258,39 @@
             left: 0;
         }
 
-        .crest-circle {
+        .yt-crest-circle {
             position: absolute;
             top: 0;
-            width: 96px;
-            height: 96px;
+            width: 88px;
+            height: 88px;
             border-radius: 50%;
-            background: #0f172a;
-            border: 2px solid #818cf8;
-            box-shadow: 0 0 25px rgba(129, 140, 248, 0.6);
+            background: linear-gradient(135deg, #FF0000 0%, #CC0000 100%);
+            border: 3px solid #ffffff;
+            box-shadow: 0 0 35px rgba(255, 0, 0, 0.85), 0 0 70px rgba(255, 0, 0, 0.45);
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .left-crest .crest-circle {
+        .left-crest .yt-crest-circle {
             right: 0;
         }
 
-        .right-crest .crest-circle {
+        .right-crest .yt-crest-circle {
             left: 0;
         }
 
-        /* Top Cyber Laser Sweeps as Book Opens */
+        /* YouTube Play Triangle */
+        .yt-play-triangle {
+            width: 0;
+            height: 0;
+            border-top: 13px solid transparent;
+            border-bottom: 13px solid transparent;
+            border-left: 22px solid #ffffff;
+            margin-left: 4px;
+        }
+
+        /* YouTube Red Laser Sweeps as Book Opens */
         .opening-laser-bar {
             position: fixed;
             top: 0;
@@ -310,9 +299,9 @@
             width: 100%;
             z-index: 99999;
             pointer-events: none;
-            background: linear-gradient(90deg, #4f46e5 0%, #a855f7 40%, #ec4899 75%, #06b6d4 100%);
+            background: linear-gradient(90deg, #ff0000 0%, #ff4e45 40%, #ff0000 80%, #cc0000 100%);
             background-size: 200% 100%;
-            box-shadow: 0 0 14px rgba(139, 92, 246, 0.85), 0 0 25px rgba(236, 72, 153, 0.5);
+            box-shadow: 0 0 16px rgba(255, 0, 0, 0.95), 0 0 30px rgba(255, 78, 69, 0.6);
             animation: laser-sweep 0.85s cubic-bezier(0.4, 0, 0.2, 1) 3.1s forwards;
         }
 
@@ -361,89 +350,98 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased bg-studio-canvas text-studio-ink selection:bg-studio-lavender selection:text-studio-ink" x-data="{ toast: { show: false, message: '' } }">
-    <!-- 3D BOOK / FOLIO OPENING EFFECT (Holds 3s then swings open) -->
+        <!-- 3D BOOK / CREATOR FOLIO OPENING (YouTube Style with Proper Images & 3s Hold) -->
     <div id="book-opening-stage" class="book-opening-stage" onclick="openBookNow()" aria-hidden="true" title="Click to skip">
-        <!-- Center Spine Light Beam -->
+        <!-- Center Spine Red Laser Pulse -->
         <div class="book-spine-glow"></div>
 
-        <!-- LEFT BOOK LEAF / COVER -->
+        <!-- LEFT BOOK LEAF / COVER (MrBeast Viral Short with Proper Image) -->
         <div class="book-leaf-left">
-            <div class="book-cover-panel">
-                <div class="book-cover-border">
-                    <div class="flex flex-col items-end gap-2 pr-2 text-right">
-                        <div class="w-11 h-11 rounded-2xl bg-indigo-600/30 border border-indigo-400/50 flex items-center justify-center text-indigo-300 shadow-lg shadow-indigo-500/20">
-                            <i class="fa-solid fa-clapperboard text-lg"></i>
+            <div class="book-cover-card">
+                <div class="relative w-full h-[380px] overflow-hidden bg-black flex flex-col justify-between p-4">
+                    <img src="{{ asset('creator-mrbeast.webp') }}" alt="MrBeast Short" class="absolute inset-0 w-full h-full object-cover opacity-85">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+                    
+                    <!-- Top YouTube Badge -->
+                    <div class="relative z-10 flex items-center justify-between">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#FF0000] text-white text-[10px] font-black tracking-wider shadow-lg">
+                            <i class="fa-brands fa-youtube text-xs"></i> SHORTS
+                        </span>
+                        <span class="px-2.5 py-1 rounded-md bg-black/75 backdrop-blur text-white text-[10px] font-bold border border-white/20">
+                            🔥 98.4% Hook
+                        </span>
+                    </div>
+
+                    <!-- Bottom Title & Info -->
+                    <div class="relative z-10 text-left">
+                        <div class="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-0.5">Short #01 • 9:16 Vertical</div>
+                        <h3 class="text-base font-black text-white leading-tight">MrBeast • $500,000 Challenge</h3>
+                        <div class="mt-2 flex items-center gap-2 text-[11px] text-slate-300">
+                            <span class="px-1.5 py-0.5 rounded bg-white/20 text-white font-bold">00:45</span>
+                            <span>•</span>
+                            <span>1080x1920 HD</span>
+                            <span>•</span>
+                            <span class="text-emerald-400 font-bold">● Ready</span>
                         </div>
-                        <h2 class="text-xl sm:text-2xl font-black tracking-wider text-white">AI SHORTS</h2>
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-300">STUDIO FOLIO</span>
                     </div>
                 </div>
             </div>
-            <!-- Half Center Crest -->
+
+            <!-- Half Center Crest (Left Half of Red YouTube Play Button) -->
             <div class="book-center-crest-half left-crest">
-                <div class="crest-circle">
-                    <i class="fa-solid fa-wand-magic-sparkles text-indigo-300 text-lg mr-6"></i>
+                <div class="yt-crest-circle">
+                    <div class="yt-play-triangle"></div>
                 </div>
             </div>
         </div>
 
-        <!-- RIGHT BOOK LEAF / COVER -->
+        <!-- RIGHT BOOK LEAF / COVER (Casey Neistat Vlog Short with Proper Image) -->
         <div class="book-leaf-right">
-            <!-- Half Center Crest -->
+            <!-- Half Center Crest (Right Half of Red YouTube Play Button) -->
             <div class="book-center-crest-half right-crest">
-                <div class="crest-circle">
-                    <i class="fa-solid fa-bolt text-indigo-300 text-lg ml-6"></i>
+                <div class="yt-crest-circle">
+                    <div class="yt-play-triangle"></div>
                 </div>
             </div>
-            <div class="book-cover-panel">
-                <div class="book-cover-border">
-                    <div class="flex flex-col items-start gap-2 pl-2 text-left">
-                        <span class="px-2 py-0.5 rounded-full bg-indigo-500/20 border border-indigo-400/40 text-indigo-300 text-[9px] font-bold tracking-widest uppercase">
-                            2026 EDITION
+
+            <div class="book-cover-card">
+                <div class="relative w-full h-[380px] overflow-hidden bg-black flex flex-col justify-between p-4">
+                    <img src="{{ asset('creator-casey-neistat.webp') }}" alt="Casey Neistat Short" class="absolute inset-0 w-full h-full object-cover opacity-85">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+                    
+                    <!-- Top YouTube Badge -->
+                    <div class="relative z-10 flex items-center justify-between">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#FF0000] text-white text-[10px] font-black tracking-wider shadow-lg">
+                            <i class="fa-brands fa-youtube text-xs"></i> CREATOR
                         </span>
-                        <h2 class="text-xl sm:text-2xl font-black tracking-wider text-white">CREATOR</h2>
-                        <p class="text-[11px] text-slate-400 font-medium">Long to Viral Shorts</p>
+                        <span class="px-2.5 py-1 rounded-md bg-black/75 backdrop-blur text-white text-[10px] font-bold border border-white/20">
+                            ⚡ Auto 9:16
+                        </span>
+                    </div>
+
+                    <!-- Bottom Title & Info -->
+                    <div class="relative z-10 text-left">
+                        <div class="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-0.5">Short #02 • 9:16 Vertical</div>
+                        <h3 class="text-base font-black text-white leading-tight">Casey Neistat • NYC Story Vlog</h3>
+                        <div class="mt-2 flex items-center gap-2 text-[11px] text-slate-300">
+                            <span class="px-1.5 py-0.5 rounded bg-white/20 text-white font-bold">00:58</span>
+                            <span>•</span>
+                            <span>1080x1920 HD</span>
+                            <span>•</span>
+                            <span class="text-emerald-400 font-bold">● Ready</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Interactive Skip Indicator -->
-        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
-            <button type="button" onclick="openBookNow()" class="px-4 py-1.5 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white/90 text-xs font-semibold backdrop-blur border border-white/20 shadow-2xl transition transform hover:scale-105 cursor-pointer flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span>
-                <span>Opening in 3s...</span>
-                <span class="text-indigo-300 text-[11px]">| Click to Skip ➔</span>
+        <!-- Interactive Skip Indicator with YouTube Red Accents -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
+            <button type="button" onclick="openBookNow()" class="px-5 py-2 rounded-full bg-[#0F0F0F]/90 hover:bg-[#272727] text-white text-xs font-bold backdrop-blur border border-red-500/40 shadow-[0_4px_25px_rgba(255,0,0,0.35)] transition transform hover:scale-105 cursor-pointer flex items-center gap-2">
+                <i class="fa-brands fa-youtube text-[#FF0000] text-sm"></i>
+                <span>Opening Studio in 3s...</span>
+                <span class="text-red-400 text-[11px] font-bold">| Skip ➔</span>
             </button>
-        </div>
-    </div>
-            <!-- Half Center Crest -->
-            <div class="book-center-crest-half left-crest">
-                <div class="crest-circle">
-                    <i class="fa-solid fa-wand-magic-sparkles text-indigo-300 text-lg mr-6"></i>
-                </div>
-            </div>
-        </div>
-
-        <!-- RIGHT BOOK LEAF / COVER -->
-        <div class="book-leaf-right">
-            <!-- Half Center Crest -->
-            <div class="book-center-crest-half right-crest">
-                <div class="crest-circle">
-                    <i class="fa-solid fa-bolt text-indigo-300 text-lg ml-6"></i>
-                </div>
-            </div>
-            <div class="book-cover-panel">
-                <div class="book-cover-border">
-                    <div class="flex flex-col items-start gap-2 pl-2 text-left">
-                        <span class="px-2 py-0.5 rounded-full bg-indigo-500/20 border border-indigo-400/40 text-indigo-300 text-[9px] font-bold tracking-widest uppercase">
-                            2026 EDITION
-                        </span>
-                        <h2 class="text-xl sm:text-2xl font-black tracking-wider text-white">CREATOR</h2>
-                        <p class="text-[11px] text-slate-400 font-medium">Long to Viral Shorts</p>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -454,9 +452,9 @@
     <div id="app-main-content" class="min-h-screen flex flex-col w-full relative site-opening-reveal">
         <!-- Ambient Glowing Background Lighting -->
         <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10 ambient-glow-bloom" aria-hidden="true">
-            <div class="absolute -top-32 -left-32 w-[34rem] h-[34rem] bg-indigo-500/10 rounded-full blur-[110px] animate-pulse"></div>
-            <div class="absolute top-1/4 -right-32 w-[30rem] h-[30rem] bg-pink-500/10 rounded-full blur-[110px]"></div>
-            <div class="absolute bottom-10 left-1/4 w-[36rem] h-[36rem] bg-violet-500/10 rounded-full blur-[120px]"></div>
+            <div class="absolute -top-32 -left-32 w-[34rem] h-[34rem] bg-red-600/8 rounded-full blur-[120px] animate-pulse"></div>
+            <div class="absolute top-1/4 -right-32 w-[30rem] h-[30rem] bg-red-500/7 rounded-full blur-[120px]"></div>
+            <div class="absolute bottom-10 left-1/4 w-[36rem] h-[36rem] bg-rose-600/6 rounded-full blur-[130px]"></div>
         </div>
     <!-- Toast Notification -->
     <div x-cloak x-show="toast.show" 
@@ -478,8 +476,8 @@
                 <!-- Brand / Logo -->
                 <div class="flex items-center gap-3">
                     <a href="{{ auth()->check() ? route('dashboard') : url('/') }}" class="flex items-center gap-3 group">
-                        <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/20 group-hover:scale-105 transition">
-                            <i class="fa-solid fa-clapperboard text-white text-lg"></i>
+                        <div class="w-10 h-10 rounded-xl bg-[#FF0000] flex items-center justify-center shadow-lg shadow-red-500/30 group-hover:scale-105 transition">
+                            <i class="fa-brands fa-youtube text-white text-xl"></i>
                         </div>
                         <div>
                             <span class="text-lg font-bold text-studio-ink">
@@ -585,7 +583,7 @@
                         <a href="{{ route('login') }}" class="text-studio-ink hover:text-brand-600 text-xs sm:text-sm font-semibold px-2 sm:px-4 py-2 rounded-xl hover:bg-studio-lavender/50 transition">
                             Sign In
                         </a>
-                        <a href="{{ route('register') }}" class="bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl shadow-lg shadow-brand-600/30 transition transform hover:-translate-y-0.5 flex items-center gap-1.5">
+                        <a href="{{ route('register') }}" class="bg-[#FF0000] hover:bg-[#CC0000] text-white text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl shadow-lg shadow-red-600/30 transition transform hover:-translate-y-0.5 flex items-center gap-1.5">
                             <span>Get Started Free</span>
                             <i class="fa-solid fa-arrow-right text-[10px]"></i>
                         </a>

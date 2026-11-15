@@ -3,16 +3,16 @@
 @section('content')
 <style>
     .studio-landing {
-        --studio-canvas: #f5f7ff;
+        --studio-canvas: #f9f9f9;
         --studio-surface: #ffffff;
-        --studio-ink: #151b45;
-        --studio-muted: #5f6a87;
-        --studio-line: #dce3f2;
-        --studio-brand: #3028a6;
-        --studio-brand-soft: #4a42c6;
-        --studio-lavender: #dde4ff;
-        --studio-peach: #ffe8db;
-        --studio-lime: #c8ff42;
+        --studio-ink: #0f0f0f;
+        --studio-muted: #606060;
+        --studio-line: #e5e5e5;
+        --studio-brand: #ff0000;
+        --studio-brand-soft: #cc0000;
+        --studio-lavender: #fee2e2;
+        --studio-peach: #ffe4e6;
+        --studio-lime: #ff0000;
         color: var(--studio-ink);
     }
 
@@ -122,7 +122,7 @@
         border-radius: .78rem;
         color: #fff;
         background: var(--studio-brand);
-        box-shadow: 0 8px 18px rgba(48, 40, 166, .22);
+        box-shadow: 0 8px 18px rgba(255, 0, 0, .25);
         font-size: .83rem;
         font-weight: 700;
         transition: background-color .2s ease, transform .2s ease, box-shadow .2s ease;
@@ -131,7 +131,7 @@
     .studio-entry-action:hover,
     .studio-final-action:hover {
         background: var(--studio-brand-soft);
-        box-shadow: 0 10px 23px rgba(48, 40, 166, .28);
+        box-shadow: 0 10px 23px rgba(255, 0, 0, .35);
         transform: translateY(-2px);
     }
 
@@ -451,7 +451,7 @@
     }
 
     .studio-short-footer i {
-        color: #4a42c6;
+        color: #ff0000;
     }
 
     .studio-lime-badge {
@@ -522,7 +522,7 @@
         max-width: 5px;
         height: var(--bar-height);
         border-radius: 3px;
-        background: #8987df;
+        background: #f87171;
         transform-origin: bottom;
         animation: audio-equalizer 1.2s ease-in-out infinite alternate;
     }
@@ -533,7 +533,7 @@
     .studio-wave-bars span:nth-child(5n) { animation-delay: 0.4s; }
 
     .studio-wave-bars span:nth-child(n + 9):nth-child(-n + 14) {
-        background: linear-gradient(to top, #4f46e5, #ec4899);
+        background: linear-gradient(to top, #cc0000, #ff0000);
     }
 
     @keyframes audio-equalizer {
@@ -543,7 +543,7 @@
     }
 
     .gradient-hero-text {
-        background: linear-gradient(135deg, #151b45 0%, #4338ca 40%, #db2777 90%);
+        background: linear-gradient(135deg, #0f0f0f 0%, #cc0000 45%, #ff0000 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
@@ -1473,7 +1473,7 @@
         </div>
 
         <div class="studio-copy">
-            <div class="mb-4 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-200/80 text-indigo-700 text-xs font-bold shadow-sm">
+            <div class="mb-4 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50 border border-red-200/80 text-red-700 text-xs font-bold shadow-sm">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
                 <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i>
                 <span>Gemma 2B + FFmpeg AI Engine Live</span>
@@ -1489,20 +1489,20 @@
             </p>
 
             <!-- Interactive Quick Generator Bar -->
-            <div class="mt-6 p-2 rounded-2xl bg-white border border-indigo-100 shadow-[0_12px_40px_rgba(74,66,198,0.14)] backdrop-blur">
+            <div class="mt-6 p-2 rounded-2xl bg-white border border-red-100/60 shadow-[0_12px_40px_rgba(255,0,0,0.12)] backdrop-blur">
                 <form action="{{ route('register') }}" method="GET" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                     <div class="flex-1 flex items-center gap-3 px-3 py-2">
                         <i class="fa-brands fa-youtube text-red-600 text-xl"></i>
                         <input type="url" name="url" placeholder="Paste YouTube link (https://youtube.com/watch?v=...)" class="w-full text-xs sm:text-sm bg-transparent border-none outline-none text-slate-800 placeholder:text-slate-400">
                     </div>
-                    <button type="submit" class="px-5 py-3 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-brand-600/30 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 whitespace-nowrap">
+                    <button type="submit" class="px-5 py-3 rounded-xl bg-[#FF0000] hover:bg-[#CC0000] text-white font-bold text-xs sm:text-sm shadow-md shadow-red-600/30 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 whitespace-nowrap">
                         <span>Generate Shorts</span>
                         <i class="fa-solid fa-arrow-right text-xs"></i>
                     </button>
                 </form>
                 <div class="mt-2 pt-2 border-t border-slate-100 flex flex-wrap items-center gap-2 px-2 text-[11px] text-slate-500">
                     <span class="font-semibold text-slate-700">Quick Try:</span>
-                    <a href="{{ route('register') }}" class="px-2.5 py-0.5 rounded-full bg-slate-100 hover:bg-indigo-50 hover:text-brand-600 transition">🎙️ Podcast Cut</a>
+                    <a href="{{ route('register') }}" class="px-2.5 py-0.5 rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 transition">🎙️ Podcast Cut</a>
                     <a href="{{ route('register') }}" class="px-2.5 py-0.5 rounded-full bg-slate-100 hover:bg-amber-50 hover:text-amber-700 transition">🔥 Viral Hook</a>
                     <a href="{{ route('nostalgia.studio') }}" class="px-2.5 py-0.5 rounded-full bg-pink-50 text-pink-700 hover:bg-pink-100 font-semibold transition">🎶 90s Music Studio</a>
                 </div>
@@ -1656,24 +1656,24 @@
 
         <!-- AI Superpowers Bento Grid -->
         <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="p-6 rounded-3xl bg-gradient-to-br from-indigo-50/80 via-white to-indigo-50/40 border border-indigo-100 shadow-[0_10px_30px_rgba(79,70,229,0.06)] hover:shadow-[0_20px_40px_rgba(79,70,229,0.12)] transition duration-300">
-                <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-xl mb-4 shadow-md shadow-indigo-600/30">
+            <div class="p-6 rounded-3xl bg-gradient-to-br from-red-50/80 via-white to-red-50/30 border border-red-100/80 shadow-[0_10px_30px_rgba(255,0,0,0.06)] hover:shadow-[0_20px_40px_rgba(255,0,0,0.12)] transition duration-300">
+                <div class="w-12 h-12 rounded-2xl bg-[#FF0000] text-white flex items-center justify-center text-xl mb-4 shadow-md shadow-red-600/30">
                     <i class="fa-solid fa-brain"></i>
                 </div>
                 <h3 class="text-lg font-bold text-slate-900 mb-2">Gemma 2B Hook Intelligence</h3>
                 <p class="text-sm text-slate-600 leading-relaxed">Local AI LLM detects engagement peaks, voice modulation, and punchlines to clip the highest viral probability segments.</p>
-                <div class="mt-4 flex items-center gap-2 text-xs font-bold text-indigo-600">
+                <div class="mt-4 flex items-center gap-2 text-xs font-bold text-[#FF0000]">
                     <i class="fa-solid fa-check-double"></i> <span>Automated Hook Scoring</span>
                 </div>
             </div>
 
-            <div class="p-6 rounded-3xl bg-gradient-to-br from-purple-50/80 via-white to-purple-50/40 border border-purple-100 shadow-[0_10px_30px_rgba(168,85,247,0.06)] hover:shadow-[0_20px_40px_rgba(168,85,247,0.12)] transition duration-300">
-                <div class="w-12 h-12 rounded-2xl bg-purple-600 text-white flex items-center justify-center text-xl mb-4 shadow-md shadow-purple-600/30">
+            <div class="p-6 rounded-3xl bg-gradient-to-br from-slate-50 via-white to-slate-100/60 border border-slate-200/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] transition duration-300">
+                <div class="w-12 h-12 rounded-2xl bg-[#0F0F0F] text-white flex items-center justify-center text-xl mb-4 shadow-md shadow-black/30">
                     <i class="fa-solid fa-crop-simple"></i>
                 </div>
                 <h3 class="text-lg font-bold text-slate-900 mb-2">Smart 9:16 Auto-Reframe</h3>
                 <p class="text-sm text-slate-600 leading-relaxed">Converts horizontal 16:9 videos into vertical 9:16 formats with smart speaker centering and smooth camera framing.</p>
-                <div class="mt-4 flex items-center gap-2 text-xs font-bold text-purple-600">
+                <div class="mt-4 flex items-center gap-2 text-xs font-bold text-[#0F0F0F]">
                     <i class="fa-solid fa-check-double"></i> <span>Ultra HD 1080x1920 Output</span>
                 </div>
             </div>
@@ -1691,7 +1691,7 @@
         </div>
 
         <!-- 90s Nostalgia Studio Special Teaser Banner -->
-        <div class="mt-8 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-950 text-white shadow-2xl relative overflow-hidden">
+        <div class="mt-8 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-[#0F0F0F] via-[#1A1A1A] to-[#272727] border border-white/10 text-white shadow-2xl relative overflow-hidden">
             <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-pink-500/20 rounded-full blur-3xl pointer-events-none"></div>
             <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div class="max-w-xl">
@@ -1739,18 +1739,18 @@
         </div>
     </section>
 
-    <section class="mt-16 p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-brand-600 via-indigo-600 to-purple-600 text-white text-center shadow-2xl relative overflow-hidden" aria-labelledby="studio-final-title">
+    <section class="mt-16 p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-[#FF0000] via-[#E60000] to-[#CC0000] text-white text-center shadow-2xl shadow-red-600/30 relative overflow-hidden" aria-labelledby="studio-final-title">
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.2),transparent_60%)] pointer-events-none"></div>
         <div class="relative z-10 max-w-2xl mx-auto space-y-4">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-white text-xs font-semibold backdrop-blur">
                 <i class="fa-solid fa-sparkles text-amber-300"></i> Free Instant Access
             </div>
             <h2 id="studio-final-title" class="text-3xl sm:text-4xl font-black tracking-tight text-white">Your Next Viral Short Starts Here</h2>
-            <p class="text-indigo-100 text-sm sm:text-base leading-relaxed">
+            <p class="text-red-100 text-sm sm:text-base leading-relaxed">
                 Transform any podcast, vlog, or long video into high-engagement vertical reels in under 60 seconds with Gemma 2B AI.
             </p>
             <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
-                <a href="{{ route('register') }}" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white text-brand-700 font-bold text-sm shadow-xl hover:bg-slate-50 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                <a href="{{ route('register') }}" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white text-[#CC0000] font-black text-sm shadow-xl hover:bg-slate-50 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
                     <span>Create Your First Short</span>
                     <i class="fa-solid fa-arrow-right"></i>
                 </a>
