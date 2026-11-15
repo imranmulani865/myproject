@@ -61,10 +61,54 @@
             }
         })();
     </script>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Local / Fallback Tailwind CSS Browser Engine -->
+    <script src="{{ asset('js/tailwindcss.js') }}"></script>
     <script>
-        tailwind.config = {
+        if (!window.tailwindcss && !document.querySelector('script[src*="@tailwindcss/browser"]')) {
+            const fallbackScript = document.createElement('script');
+            fallbackScript.src = 'https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4';
+            document.head.appendChild(fallbackScript);
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @theme {
+            --color-studio-canvas: #f5f7ff;
+            --color-studio-surface: #ffffff;
+            --color-studio-ink: #151b45;
+            --color-studio-muted: #5f6a87;
+            --color-studio-line: #dce3f2;
+            --color-studio-lavender: #dde4ff;
+            --color-studio-peach: #ffe8db;
+            --color-studio-lime: #c8ff42;
+
+            --color-brand-200: #e3e3ff;
+            --color-brand-300: #b8b7f5;
+            --color-brand-400: #807ce7;
+            --color-brand-500: #4a42c6;
+            --color-brand-600: #3028a6;
+            --color-brand-700: #26207f;
+            --color-brand-800: #1b175f;
+            --color-brand-950: #121139;
+
+            --color-ocean-200: #e6e4ff;
+            --color-ocean-300: #d1ceff;
+            --color-ocean-400: #a9a4f1;
+            --color-ocean-500: #6b63c4;
+            --color-ocean-600: #5149a6;
+            --color-ocean-700: #3d377f;
+            --color-ocean-950: #1a1942;
+
+            --color-aqua-300: #efe4ff;
+            --color-aqua-400: #cbb8f4;
+            --color-aqua-500: #7765bd;
+            --color-aqua-600: #5d4ea1;
+            --color-aqua-700: #493c7f;
+            --color-aqua-950: #241a45;
+        }
+    </style>
+    <script>
+        window.tailwind = window.tailwind || {};
+        window.tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
@@ -121,12 +165,13 @@
                     }
                 }
             }
-        }
+        };
     </script>
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Alpine.js (Local with CDN fallback) -->
+    <script defer src="{{ asset('js/alpine.min.js') }}"></script>
+    <!-- Font Awesome Icons (Local with CDN fallback) -->
+    <link rel="stylesheet" href="{{ asset('css/all.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
     <style>
         [x-cloak] { display: none !important; }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
