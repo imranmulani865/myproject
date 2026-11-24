@@ -1,115 +1,97 @@
 @extends('layouts.app')
 
-@section('title', 'Admin - Token Audit Ledger')
+@section('title', 'Credit ledger • Admin')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <div>
-            <div class="flex items-center gap-2 text-xs text-slate-400 mb-1">
-                <a href="{{ route('admin.dashboard') }}" class="hover:text-indigo-400 transition">Admin Panel</a>
-                <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                <span class="text-slate-200">Token Audit Ledger</span>
+<div class="space-y-7">
+    <header class="relative overflow-hidden rounded-[1.75rem] border border-[#DDE4F0] bg-white p-6 shadow-[0_16px_50px_rgba(21,34,56,.06)] sm:p-8">
+        <div class="absolute -right-12 -top-24 h-64 w-64 rounded-full bg-[#FFF0DC]/80 blur-3xl" aria-hidden="true"></div>
+        <div class="relative">
+            <a href="{{ route('admin.dashboard') }}" class="text-xs font-bold text-[#4251CE] hover:underline">Admin overview</a>
+            <h1 class="mt-3 font-['Space_Grotesk'] text-3xl font-bold tracking-[-.05em] text-[#152238] sm:text-4xl">Credit ledger</h1>
+            <p class="mt-2 text-sm text-[#687684]">Review every credit addition, deduction, and refund with its audit reason.</p>
+        </div>
+    </header>
+
+    @include('admin.navigation')
+
+    <section class="rounded-2xl border border-[#DDE4F0] bg-white p-4 shadow-[0_10px_30px_rgba(21,34,56,.04)] sm:p-5" aria-label="Filter credit activity">
+        <form method="GET" action="{{ route('admin.transactions') }}" class="grid gap-3 md:grid-cols-[minmax(0,1fr)_210px_auto] md:items-end">
+            <div>
+                <label for="admin-ledger-search" class="mb-1.5 block text-xs font-bold text-[#526078]">Search activity</label>
+                <input id="admin-ledger-search" type="search" name="search" value="{{ request('search') }}" placeholder="User, email, or description"
+                       class="min-h-11 w-full rounded-xl border border-[#DDE4F0] bg-[#F8FAFF] px-4 text-sm text-[#152238] placeholder:text-[#8A96A8] focus:border-[#4D5CFF] focus:outline-none focus:ring-2 focus:ring-[#DDE2FF]">
             </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3">
-                <span class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
-                    <i class="fa-solid fa-receipt"></i>
-                </span>
-                Global Token Audit Ledger
-            </h1>
-        </div>
+            <div>
+                <label for="admin-ledger-type" class="mb-1.5 block text-xs font-bold text-[#526078]">Transaction type</label>
+                <select id="admin-ledger-type" name="type" class="min-h-11 w-full rounded-xl border border-[#DDE4F0] bg-[#F8FAFF] px-4 text-sm text-[#152238] focus:border-[#4D5CFF] focus:outline-none focus:ring-2 focus:ring-[#DDE2FF]">
+                    <option value="">All types</option>
+                    @foreach(['bonus' => 'Bonus', 'purchase' => 'Purchase', 'usage' => 'Usage', 'manual_credit' => 'Admin credit', 'manual_debit' => 'Admin debit', 'refund' => 'Refund'] as $value => $label)
+                        <option value="{{ $value }}" @selected(request('type') === $value)>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="flex gap-2">
+                <button type="submit" class="inline-flex min-h-11 flex-1 items-center justify-center rounded-xl bg-[#4D5CFF] px-5 text-sm font-bold text-white hover:bg-[#3949E9] md:flex-none">Apply filters</button>
+                @if(request('search') || request('type'))
+                    <a href="{{ route('admin.transactions') }}" class="inline-flex min-h-11 items-center justify-center rounded-xl border border-[#DDE4F0] bg-white px-4 text-sm font-bold text-[#526078] hover:bg-[#F6F7FF]">Reset</a>
+                @endif
+            </div>
+        </form>
+    </section>
 
-        <div class="flex items-center gap-2">
-            <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl border border-slate-700 transition">
-                <i class="fa-solid fa-arrow-left"></i>
-                Dashboard
-            </a>
-            <a href="{{ route('admin.users') }}" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl border border-slate-700 transition">
-                <i class="fa-solid fa-users text-indigo-400"></i>
-                Users
-            </a>
+    <section class="overflow-hidden rounded-2xl border border-[#DDE4F0] bg-white shadow-[0_12px_34px_rgba(21,34,56,.05)]" aria-labelledby="ledger-table-title">
+        <div class="flex items-center justify-between border-b border-[#E8ECF3] px-5 py-4 sm:px-6">
+            <h2 id="ledger-table-title" class="font-['Space_Grotesk'] text-lg font-bold text-[#152238]">Activity log</h2>
+            <span class="text-xs font-semibold text-[#687684]">{{ number_format($transactions->total()) }} results</span>
         </div>
-    </div>
-
-    <!-- Ledger Table -->
-    <div class="rounded-2xl bg-slate-900/80 border border-slate-800 overflow-hidden shadow-xl">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm text-slate-300">
-                <thead class="bg-slate-950/80 text-xs uppercase text-slate-400 tracking-wider">
+        <div class="overflow-x-auto" role="region" aria-label="Credit activity table" tabindex="0">
+            <table class="min-w-[1000px] w-full text-left text-sm text-[#526078]">
+                <thead class="bg-[#F8FAFF] text-xs font-bold text-[#687684]">
                     <tr>
-                        <th class="px-6 py-4 font-semibold">Timestamp</th>
-                        <th class="px-6 py-4 font-semibold">User</th>
-                        <th class="px-6 py-4 font-semibold">Type</th>
-                        <th class="px-6 py-4 font-semibold">Description / Audit Reason</th>
-                        <th class="px-6 py-4 font-semibold">Authorized By</th>
-                        <th class="px-6 py-4 font-semibold text-right">Token Flow</th>
+                        <th scope="col" class="px-5 py-3.5">Date and time</th>
+                        <th scope="col" class="px-5 py-3.5">User</th>
+                        <th scope="col" class="px-5 py-3.5">Type</th>
+                        <th scope="col" class="px-5 py-3.5">Description</th>
+                        <th scope="col" class="px-5 py-3.5">Authorized by</th>
+                        <th scope="col" class="px-5 py-3.5 text-right">Credits</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-800/80">
-                    @forelse($transactions as $tx)
-                        <tr class="hover:bg-slate-800/40 transition">
-                            <td class="px-6 py-4 text-xs text-slate-400 whitespace-nowrap">
-                                {{ $tx->created_at->format('M d, Y • h:i:s A') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="font-bold text-white text-xs">{{ $tx->user ? $tx->user->name : 'Deleted User' }}</div>
-                                <div class="text-[11px] text-slate-500">{{ $tx->user ? $tx->user->email : '' }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                @if($tx->type === 'bonus')
-                                    <span class="px-2.5 py-0.5 rounded text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Bonus</span>
-                                @elseif($tx->type === 'usage')
-                                    <span class="px-2.5 py-0.5 rounded text-[11px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">Usage</span>
-                                @elseif($tx->type === 'manual_credit')
-                                    <span class="px-2.5 py-0.5 rounded text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">Admin Credit</span>
-                                @elseif($tx->type === 'manual_debit')
-                                    <span class="px-2.5 py-0.5 rounded text-[11px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">Admin Debit</span>
-                                @elseif($tx->type === 'refund')
-                                    <span class="px-2.5 py-0.5 rounded text-[11px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">Refund</span>
+                <tbody class="divide-y divide-[#E8ECF3]">
+                    @forelse($transactions as $transaction)
+                        <tr class="hover:bg-[#F8FAFF]">
+                            <td class="whitespace-nowrap px-5 py-4 text-xs text-[#687684]">{{ $transaction->created_at->format('M d, Y · h:i:s A') }}</td>
+                            <td class="px-5 py-4">
+                                @if($transaction->user)
+                                    <a href="{{ route('admin.users.show', $transaction->user->id) }}" class="block max-w-[180px] truncate font-semibold text-[#152238] hover:text-[#4251CE]">{{ $transaction->user->name }}</a>
+                                    <span class="block max-w-[180px] truncate text-xs text-[#8792A6]">{{ $transaction->user->email }}</span>
                                 @else
-                                    <span class="px-2.5 py-0.5 rounded text-[11px] font-bold bg-slate-800 text-slate-300">{{ ucfirst($tx->type) }}</span>
+                                    <span class="text-[#8792A6]">Deleted user</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 text-xs text-slate-200">
-                                {{ $tx->description }}
-                                @if($tx->project_id)
-                                    <a href="{{ route('projects.show', $tx->project_id) }}" class="text-indigo-400 hover:underline ml-1">
-                                        (Project #{{ $tx->project_id }})
-                                    </a>
+                            <td class="px-5 py-4">
+                                <span class="inline-flex whitespace-nowrap rounded-full border px-2.5 py-1 text-xs font-bold {{ $transaction->amount >= 0 ? 'border-emerald-200 bg-emerald-50 text-[#19734E]' : 'border-rose-200 bg-rose-50 text-[#B7473D]' }}">
+                                    {{ match($transaction->type) { 'manual_credit' => 'Admin credit', 'manual_debit' => 'Admin debit', default => ucfirst($transaction->type) } }}
+                                </span>
+                            </td>
+                            <td class="max-w-[300px] px-5 py-4 text-xs text-[#526078]">
+                                <span class="line-clamp-2">{{ $transaction->description }}</span>
+                                @if($transaction->project_id)
+                                    <a href="{{ route('admin.projects.show', $transaction->project_id) }}" class="mt-1 inline-block font-bold text-[#4251CE] hover:underline">Project #{{ $transaction->project_id }}</a>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 text-xs text-slate-400 whitespace-nowrap">
-                                @if($tx->admin)
-                                    <span class="text-purple-300 font-semibold">{{ $tx->admin->name }}</span>
-                                @else
-                                    <span class="text-slate-600">System (Auto)</span>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4 text-right whitespace-nowrap">
-                                @if($tx->amount > 0)
-                                    <span class="text-emerald-400 font-black text-sm">+{{ $tx->amount }}</span>
-                                @else
-                                    <span class="text-rose-400 font-black text-sm">{{ $tx->amount }}</span>
-                                @endif
-                            </td>
+                            <td class="px-5 py-4 text-xs">{{ $transaction->admin?->name ?? 'System' }}</td>
+                            <td class="whitespace-nowrap px-5 py-4 text-right font-['Space_Grotesk'] font-bold {{ $transaction->amount >= 0 ? 'text-[#19734E]' : 'text-[#B7473D]' }}">{{ $transaction->amount > 0 ? '+' : '' }}{{ number_format($transaction->amount) }}</td>
                         </tr>
                     @empty
-                        <tr>
-                            <td colspan="6" class="px-6 py-12 text-center text-slate-500 text-sm">
-                                No token transactions recorded yet.
-                            </td>
-                        </tr>
+                        <tr><td colspan="6" class="px-6 py-12 text-center text-sm text-[#687684]">No credit activity matches these filters.</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-
         @if($transactions->hasPages())
-            <div class="px-6 py-4 border-t border-slate-800">
-                {{ $transactions->links() }}
-            </div>
+            <div class="border-t border-[#E8ECF3] px-5 py-4">{{ $transactions->links() }}</div>
         @endif
-    </div>
+    </section>
 </div>
 @endsection

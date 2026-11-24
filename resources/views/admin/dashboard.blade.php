@@ -1,202 +1,126 @@
 @extends('layouts.app')
 
-@section('title', 'Admin Master Dashboard')
+@section('title', 'Admin overview • AI Shorts Creator')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <div>
-            <div class="flex items-center gap-2 text-xs text-slate-400 mb-1">
-                <a href="{{ route('dashboard') }}" class="hover:text-indigo-400 transition">User Dashboard</a>
-                <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                <span class="text-purple-300 font-semibold">Admin Panel</span>
+<div class="space-y-7">
+    <header class="relative overflow-hidden rounded-[1.75rem] border border-[#DDE4F0] bg-white p-6 shadow-[0_16px_50px_rgba(21,34,56,.06)] sm:p-8">
+        <div class="absolute -right-12 -top-24 h-64 w-64 rounded-full bg-[#DDE2FF]/70 blur-3xl" aria-hidden="true"></div>
+        <div class="relative flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+            <div>
+                <p class="mb-2 text-xs font-bold text-[#4D5CFF]">ADMIN WORKSPACE</p>
+                <h1 class="font-['Space_Grotesk'] text-3xl font-bold tracking-[-.05em] text-[#152238] sm:text-4xl">Studio overview</h1>
+                <p class="mt-2 max-w-xl text-sm text-[#687684]">Users, projects, credits, and payments in one clear view.</p>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3">
-                <span class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center border border-purple-500/30">
-                    <i class="fa-solid fa-shield-halved"></i>
-                </span>
-                Admin Master Dashboard
-            </h1>
-        </div>
-
-        <!-- Navigation Tabs -->
-        <div class="flex items-center gap-2">
-            <a href="{{ route('admin.users') }}" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl border border-slate-700 transition">
-                <i class="fa-solid fa-users text-indigo-400"></i>
-                Manage Users
-            </a>
-            <a href="{{ route('admin.projects') }}" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl border border-slate-700 transition">
-                <i class="fa-solid fa-video text-pink-400"></i>
-                All Projects
-            </a>
-            <a href="{{ route('admin.transactions') }}" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl border border-slate-700 transition">
-                <i class="fa-solid fa-receipt text-amber-400"></i>
-                Token Ledger
-            </a>
-            <a href="{{ route('admin.payments') }}" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl border border-slate-700 transition">
-                <i class="fa-solid fa-credit-card text-blue-400"></i>
-                Payments
+            <a href="{{ route('dashboard') }}" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#DDE4F0] bg-white px-4 py-2 text-sm font-bold text-[#4251CE] hover:bg-[#F1F3FF]">
+                <i class="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i>Creator dashboard
             </a>
         </div>
-    </div>
+    </header>
 
-    <!-- Alert Messages -->
-    @if(session('success'))
-        <div class="mb-6 p-4 rounded-2xl bg-emerald-950/80 border border-emerald-800/80 text-emerald-200 text-xs sm:text-sm flex items-center gap-3 shadow-lg">
-            <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
-            <span>{{ session('success') }}</span>
-        </div>
-    @endif
-    @if(session('error'))
-        <div class="mb-6 p-4 rounded-2xl bg-rose-950/80 border border-rose-800/80 text-rose-200 text-xs sm:text-sm flex items-center gap-3 shadow-lg">
-            <i class="fa-solid fa-circle-xmark text-rose-400 text-lg"></i>
-            <span>{{ session('error') }}</span>
-        </div>
-    @endif
+    @include('admin.navigation')
 
-    <!-- Metric Cards Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-        <!-- Total Users -->
-        <div class="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl">
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Total Users</span>
-                <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-sm">
-                    <i class="fa-solid fa-users"></i>
-                </span>
-            </div>
-            <div class="text-3xl font-extrabold text-white mb-1">{{ number_format($totalUsers) }}</div>
-            <div class="text-xs text-emerald-400 flex items-center gap-1.5">
-                <i class="fa-solid fa-circle text-[8px]"></i>
-                <span>{{ $activeUsers }} Active Accounts</span>
-            </div>
+    <section class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Platform totals">
+        <div class="rounded-2xl border border-[#DDE4F0] bg-white p-5 shadow-[0_10px_30px_rgba(21,34,56,.04)]">
+            <div class="flex items-center justify-between text-xs font-semibold text-[#687684]"><span>Users</span><i class="fa-solid fa-users text-[#4D5CFF]" aria-hidden="true"></i></div>
+            <p class="mt-4 font-['Space_Grotesk'] text-3xl font-bold text-[#152238]">{{ number_format($totalUsers) }}</p>
+            <p class="mt-1 text-xs text-[#687684]">{{ number_format($activeUsers) }} active {{ $activeUsers === 1 ? 'account' : 'accounts' }}</p>
         </div>
-
-        <!-- Total Circulating Tokens -->
-        <div class="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl">
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-xs uppercase font-semibold text-amber-400 tracking-wider">Circulating Tokens</span>
-                <span class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm">
-                    <i class="fa-solid fa-coins"></i>
-                </span>
-            </div>
-            <div class="text-3xl font-extrabold text-amber-300 mb-1">{{ number_format($totalTokens) }}</div>
-            <div class="text-xs text-slate-400">
-                Total tokens held across all wallets
-            </div>
+        <div class="rounded-2xl border border-[#DDE4F0] bg-white p-5 shadow-[0_10px_30px_rgba(21,34,56,.04)]">
+            <div class="flex items-center justify-between text-xs font-semibold text-[#687684]"><span>Generated shorts</span><i class="fa-solid fa-film text-[#FF735B]" aria-hidden="true"></i></div>
+            <p class="mt-4 font-['Space_Grotesk'] text-3xl font-bold text-[#152238]">{{ number_format($totalShorts) }}</p>
+            <p class="mt-1 text-xs text-[#687684]">From {{ number_format($totalProjects) }} projects</p>
         </div>
-
-        <!-- Video Projects & Shorts -->
-        <div class="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl">
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Generated Shorts</span>
-                <span class="w-8 h-8 rounded-lg bg-pink-500/20 text-pink-400 flex items-center justify-center text-sm">
-                    <i class="fa-solid fa-film"></i>
-                </span>
-            </div>
-            <div class="text-3xl font-extrabold text-white mb-1">{{ number_format($totalShorts) }}</div>
-            <div class="text-xs text-slate-400">
-                From {{ number_format($totalProjects) }} submitted projects
-            </div>
+        <div class="rounded-2xl border border-[#DDE4F0] bg-white p-5 shadow-[0_10px_30px_rgba(21,34,56,.04)]">
+            <div class="flex items-center justify-between text-xs font-semibold text-[#687684]"><span>Credits in wallets</span><i class="fa-solid fa-coins text-[#C47A21]" aria-hidden="true"></i></div>
+            <p class="mt-4 font-['Space_Grotesk'] text-3xl font-bold text-[#152238]">{{ number_format($totalTokens) }}</p>
+            <p class="mt-1 text-xs text-[#687684]">Across all users</p>
         </div>
-
-        <!-- Queue Status -->
-        <div class="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl">
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Queue Worker</span>
-                <span class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm">
-                    <i class="fa-solid fa-server"></i>
-                </span>
-            </div>
-            <div class="text-3xl font-extrabold text-white mb-1">{{ $queueJobsCount }}</div>
-            <div class="text-xs text-slate-400 flex items-center gap-1.5">
-                <span class="w-2 h-2 rounded-full {{ $queueJobsCount > 0 ? 'bg-amber-400 animate-ping' : 'bg-emerald-400' }}"></span>
-                <span>{{ $queueJobsCount > 0 ? 'Jobs in processing queue' : 'Queue idle & healthy' }}</span>
-            </div>
+        <div class="rounded-2xl border border-[#DDE4F0] bg-white p-5 shadow-[0_10px_30px_rgba(21,34,56,.04)]">
+            <div class="flex items-center justify-between text-xs font-semibold text-[#687684]"><span>Paid revenue</span><i class="fa-solid fa-credit-card text-[#4D5CFF]" aria-hidden="true"></i></div>
+            <p class="mt-4 font-['Space_Grotesk'] text-3xl font-bold text-[#152238]">₹{{ number_format($totalRevenuePaise / 100, 2) }}</p>
+            <p class="mt-1 text-xs text-[#687684]">Total revenue received</p>
         </div>
-    </div>
+    </section>
 
-    <!-- Content Sections: Recent Users & Recent Transactions -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- Recent Users Table -->
-        <div class="rounded-2xl bg-slate-900/80 border border-slate-800 overflow-hidden shadow-xl">
-            <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
-                <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-user-plus text-indigo-400"></i>
-                    Recent Registered Users
-                </h3>
-                <a href="{{ route('admin.users') }}" class="text-xs text-indigo-400 hover:text-indigo-300 font-semibold">
-                    View All Users &rarr;
-                </a>
+    <section class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6" aria-label="Project and queue status">
+        <div class="rounded-2xl border border-[#DDE4F0] bg-[#F8FAFF] p-4"><p class="text-xs font-semibold text-[#687684]">Pending</p><p class="mt-2 font-['Space_Grotesk'] text-2xl font-bold text-[#152238]">{{ number_format($pendingProjects) }}</p></div>
+        <div class="rounded-2xl border border-[#DDE4F0] bg-[#F8FAFF] p-4"><p class="text-xs font-semibold text-[#687684]">Processing</p><p class="mt-2 font-['Space_Grotesk'] text-2xl font-bold text-[#4251CE]">{{ number_format($processingProjects) }}</p></div>
+        <div class="rounded-2xl border border-[#DDE4F0] bg-[#F8FAFF] p-4"><p class="text-xs font-semibold text-[#687684]">Completed</p><p class="mt-2 font-['Space_Grotesk'] text-2xl font-bold text-[#19734E]">{{ number_format($completedProjects) }}</p></div>
+        <div class="rounded-2xl border border-[#DDE4F0] bg-[#F8FAFF] p-4"><p class="text-xs font-semibold text-[#687684]">Failed projects</p><p class="mt-2 font-['Space_Grotesk'] text-2xl font-bold text-[#B7473D]">{{ number_format($failedProjects) }}</p></div>
+        <div class="rounded-2xl border border-[#DDE4F0] bg-[#F8FAFF] p-4"><p class="text-xs font-semibold text-[#687684]">Queued jobs</p><p class="mt-2 font-['Space_Grotesk'] text-2xl font-bold text-[#152238]">{{ $queueMetricsAvailable ? number_format($queueJobsCount) : '—' }}</p></div>
+        <div class="rounded-2xl border border-[#DDE4F0] bg-[#F8FAFF] p-4"><p class="text-xs font-semibold text-[#687684]">Failed jobs</p><p class="mt-2 font-['Space_Grotesk'] text-2xl font-bold text-[#B7473D]">{{ $queueMetricsAvailable ? number_format($failedJobsCount) : '—' }}</p></div>
+    </section>
+
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <section class="overflow-hidden rounded-2xl border border-[#DDE4F0] bg-white shadow-[0_12px_34px_rgba(21,34,56,.05)]" aria-labelledby="recent-users-title">
+            <div class="flex items-center justify-between gap-3 border-b border-[#E8ECF3] px-5 py-4 sm:px-6">
+                <h2 id="recent-users-title" class="font-['Space_Grotesk'] text-lg font-bold text-[#152238]">Recent users</h2>
+                <a href="{{ route('admin.users') }}" class="text-xs font-bold text-[#4251CE] hover:underline">View all users</a>
             </div>
-            <div class="divide-y divide-slate-800/80">
-                @foreach($recentUsers as $u)
-                    <div class="p-4 px-6 flex items-center justify-between hover:bg-slate-800/30 transition">
-                        <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white">
-                                {{ strtoupper(substr($u->name, 0, 1)) }}
-                            </div>
-                            <div>
-                                <div class="text-sm font-semibold text-white flex items-center gap-2">
-                                    <span>{{ $u->name }}</span>
-                                    @if($u->isAdmin())
-                                        <span class="px-1.5 py-0.2 rounded text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">Admin</span>
-                                    @endif
-                                </div>
-                                <div class="text-xs text-slate-400 truncate max-w-xs">{{ $u->email }}</div>
+            <div class="divide-y divide-[#E8ECF3]">
+                @forelse($recentUsers as $u)
+                    <div class="flex items-center justify-between gap-3 px-5 py-4 sm:px-6">
+                        <div class="flex min-w-0 items-center gap-3">
+                            <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#E8EAFF] font-bold text-[#4251CE]">{{ strtoupper(substr($u->name, 0, 1)) }}</span>
+                            <div class="min-w-0">
+                                <a href="{{ route('admin.users.show', $u->id) }}" class="block truncate text-sm font-bold text-[#152238] hover:text-[#4251CE]">{{ $u->name }}</a>
+                                <p class="truncate text-xs text-[#687684]">{{ $u->email }}</p>
                             </div>
                         </div>
-                        <div class="text-right">
-                            <div class="text-xs font-extrabold text-amber-400">
-                                {{ number_format($u->tokens) }} Tokens
-                            </div>
-                            <div class="text-[11px] text-slate-500 capitalize">
-                                Status: <strong class="{{ $u->status === 'active' ? 'text-emerald-400' : 'text-rose-400' }}">{{ $u->status }}</strong>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-
-        <!-- Recent Token Transactions -->
-        <div class="rounded-2xl bg-slate-900/80 border border-slate-800 overflow-hidden shadow-xl">
-            <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
-                <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-clock-rotate-left text-amber-400"></i>
-                    Recent Token Ledger Activity
-                </h3>
-                <a href="{{ route('admin.transactions') }}" class="text-xs text-indigo-400 hover:text-indigo-300 font-semibold">
-                    View Full Ledger &rarr;
-                </a>
-            </div>
-            <div class="divide-y divide-slate-800/80">
-                @forelse($recentTransactions as $tx)
-                    <div class="p-4 px-6 flex items-center justify-between hover:bg-slate-800/30 transition text-xs">
-                        <div>
-                            <div class="font-semibold text-slate-200">
-                                {{ $tx->user ? $tx->user->name : 'Unknown User' }}
-                            </div>
-                            <div class="text-slate-400 text-[11px] truncate max-w-xs">
-                                {{ $tx->description }}
-                            </div>
-                        </div>
-                        <div class="text-right whitespace-nowrap">
-                            <div class="font-black text-sm {{ $tx->amount > 0 ? 'text-emerald-400' : 'text-rose-400' }}">
-                                {{ $tx->amount > 0 ? '+'.$tx->amount : $tx->amount }}
-                            </div>
-                            <div class="text-[10px] text-slate-500">
-                                {{ $tx->created_at->diffForHumans() }}
-                            </div>
+                        <div class="shrink-0 text-right">
+                            <p class="text-sm font-bold text-[#152238]">{{ number_format($u->tokens) }} <span class="text-xs font-medium text-[#687684]">credits</span></p>
+                            <p class="text-xs capitalize {{ $u->status === 'active' ? 'text-[#19734E]' : 'text-[#B7473D]' }}">{{ $u->status }}</p>
                         </div>
                     </div>
                 @empty
-                    <div class="p-6 text-center text-slate-500 text-xs">
-                        No transactions recorded yet.
-                    </div>
+                    <p class="px-6 py-9 text-sm text-[#687684]">No users have registered yet.</p>
                 @endforelse
             </div>
-        </div>
+        </section>
+
+        <section class="overflow-hidden rounded-2xl border border-[#DDE4F0] bg-white shadow-[0_12px_34px_rgba(21,34,56,.05)]" aria-labelledby="recent-ledger-title">
+            <div class="flex items-center justify-between gap-3 border-b border-[#E8ECF3] px-5 py-4 sm:px-6">
+                <h2 id="recent-ledger-title" class="font-['Space_Grotesk'] text-lg font-bold text-[#152238]">Credit activity</h2>
+                <a href="{{ route('admin.transactions') }}" class="text-xs font-bold text-[#4251CE] hover:underline">View full ledger</a>
+            </div>
+            <div class="divide-y divide-[#E8ECF3]">
+                @forelse($recentTransactions as $tx)
+                    <div class="flex items-center justify-between gap-3 px-5 py-4 sm:px-6">
+                        <div class="min-w-0">
+                            <p class="truncate text-sm font-bold text-[#152238]">{{ $tx->user ? $tx->user->name : 'Deleted user' }}</p>
+                            <p class="truncate text-xs text-[#687684]">{{ $tx->description }}</p>
+                        </div>
+                        <div class="shrink-0 text-right">
+                            <p class="text-sm font-bold {{ $tx->amount > 0 ? 'text-[#19734E]' : 'text-[#B7473D]' }}">{{ $tx->amount > 0 ? '+' : '' }}{{ number_format($tx->amount) }}</p>
+                            <p class="text-xs text-[#8792A6]">{{ $tx->created_at->diffForHumans() }}</p>
+                        </div>
+                    </div>
+                @empty
+                    <p class="px-6 py-9 text-sm text-[#687684]">No credit transactions yet.</p>
+                @endforelse
+            </div>
+        </section>
     </div>
+
+    <section class="overflow-hidden rounded-2xl border border-[#DDE4F0] bg-white shadow-[0_12px_34px_rgba(21,34,56,.05)]" aria-labelledby="recent-projects-title">
+        <div class="flex items-center justify-between gap-3 border-b border-[#E8ECF3] px-5 py-4 sm:px-6">
+            <h2 id="recent-projects-title" class="font-['Space_Grotesk'] text-lg font-bold text-[#152238]">Latest projects</h2>
+            <a href="{{ route('admin.projects') }}" class="text-xs font-bold text-[#4251CE] hover:underline">View all projects</a>
+        </div>
+        <div class="divide-y divide-[#E8ECF3]">
+            @forelse($recentProjects as $project)
+                <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-6">
+                    <div class="min-w-0">
+                        <a href="{{ route('admin.projects.show', $project->id) }}" class="block truncate text-sm font-bold text-[#152238] hover:text-[#4251CE]">{{ $project->title ?: 'Untitled video' }}</a>
+                        <p class="text-xs text-[#687684]">{{ $project->user?->name ?? 'Deleted user' }} · {{ $project->created_at->diffForHumans() }}</p>
+                    </div>
+                    <span class="rounded-full border px-3 py-1 text-xs font-bold capitalize {{ $project->status === 'completed' ? 'border-emerald-200 bg-emerald-50 text-[#19734E]' : ($project->status === 'failed' ? 'border-rose-200 bg-rose-50 text-[#B7473D]' : 'border-[#D8DFFF] bg-[#F1F3FF] text-[#4251CE]') }}">{{ $project->status }}</span>
+                </div>
+            @empty
+                <p class="px-6 py-9 text-sm text-[#687684]">No projects have been submitted yet.</p>
+            @endforelse
+        </div>
+    </section>
 </div>
 @endsection

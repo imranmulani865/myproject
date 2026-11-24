@@ -2,10 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,28 +14,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Admin User
-        $admin = User::updateOrCreate(
-            ['email' => 'admin@example.com'],
-            [
-                'name' => 'System Administrator',
-                'password' => Hash::make('password123'),
-                'role' => 'admin',
-                'status' => 'active',
-                'tokens' => 9999,
-            ]
-        );
-
-        // Creator User
-        $creator = User::updateOrCreate(
-            ['email' => 'creator@shortstudio.com'],
-            [
-                'name' => 'Pro Creator',
-                'password' => Hash::make('Shorts@1234'),
-                'role' => 'user',
-                'status' => 'active',
-                'tokens' => 150,
-            ]
-        );
+        // Accounts are registered normally; an existing account can be granted admin access with admin:grant.
     }
 }

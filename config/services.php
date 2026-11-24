@@ -40,4 +40,8 @@ return [
         'key_secret' => env('RAZORPAY_KEY_SECRET', 'rzp_test_mock_secret'),
     ],
 
+    'youtube' => [
+        'api_key' => env('YOUTUBE_API_KEY'),
+    ],
+
 ];

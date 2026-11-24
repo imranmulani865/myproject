@@ -18,7 +18,7 @@ return new class extends Migration
         });
 
         Schema::table('video_projects', function (Blueprint $table) {
-            $table->string('mode')->default('dialogue')->after('target_duration'); // 'dialogue', 'song'
+            $table->string('mode')->default('dialogue')->after('clip_duration_pref'); // 'dialogue', 'song'
             $table->integer('tokens_used')->default(0)->after('mode');
         });
 

@@ -33,8 +33,22 @@ except ImportError:
 
 from PIL import Image, ImageDraw, ImageFont
 
+def emit_worker_event(event):
+    print("VIDEO_EVENT:" + json.dumps(event, ensure_ascii=False), flush=True)
+
+
 def log_progress(db_path, project_id, percent, step_msg, status=None, error_msg=None, raw_analysis=None):
     print(f"[{percent}%] {step_msg}", flush=True)
+    if db_path is None:
+        emit_worker_event({
+            "type": "progress",
+            "percent": percent,
+            "step": step_msg,
+            "status": status,
+            "error_message": error_msg,
+            "raw_analysis": raw_analysis,
+        })
+        return
     if not db_path or not os.path.exists(db_path):
         return
     try:
@@ -827,15 +841,34 @@ def cut_vertical_short_with_cta(input_video_path, start_seconds, duration, cta_i
         subprocess.run(thumb_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def save_shorts_to_db(db_path, project_id, user_id, shorts_list, project_title):
-    conn = sqlite3.connect(db_path, timeout=30.0)
-    cursor = conn.cursor()
-    now_str = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-
+    short_rows = []
     for short in shorts_list:
         file_size = 0
         if os.path.exists(short['full_video_path']):
             file_size = os.path.getsize(short['full_video_path'])
 
+        short_rows.append({
+            "title": short['title'],
+            "description": short.get('description', ''),
+            "tags": short.get('tags', ''),
+            "start_seconds": short['start_seconds'],
+            "end_seconds": short['end_seconds'],
+            "duration_seconds": short['duration_seconds'],
+            "hook_reason": short.get('hook_reason', ''),
+            "video_path": short['relative_video_path'],
+            "thumbnail_path": short.get('relative_thumb_path', ''),
+            "file_size_bytes": file_size,
+        })
+
+    if db_path is None:
+        emit_worker_event({"type": "shorts", "shorts": short_rows, "project_title": project_title})
+        return
+
+    conn = sqlite3.connect(db_path, timeout=30.0)
+    cursor = conn.cursor()
+    now_str = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+
+    for short in short_rows:
         cursor.execute("""
             INSERT INTO generated_shorts 
             (video_project_id, user_id, title, description, tags, start_seconds, end_seconds, duration_seconds, hook_reason, video_path, thumbnail_path, file_size_bytes, created_at, updated_at)
@@ -844,15 +877,15 @@ def save_shorts_to_db(db_path, project_id, user_id, shorts_list, project_title):
             project_id,
             user_id,
             short['title'],
-            short.get('description', ''),
-            short.get('tags', ''),
+            short['description'],
+            short['tags'],
             short['start_seconds'],
             short['end_seconds'],
             short['duration_seconds'],
-            short.get('hook_reason', ''),
-            short['relative_video_path'],
-            short.get('relative_thumb_path', ''),
-            file_size,
+            short['hook_reason'],
+            short['video_path'],
+            short['thumbnail_path'],
+            short['file_size_bytes'],
             now_str,
             now_str
         ))
@@ -879,11 +912,16 @@ def main():
     parser = argparse.ArgumentParser(description="AI Video Shorts Generator")
     parser.add_argument("--project-id", required=True, type=int)
     parser.add_argument("--db-path", default="database/database.sqlite")
+    parser.add_argument("--project-stdin", action="store_true")
     parser.add_argument("--ollama-host", default="http://127.0.0.1:11434")
     parser.add_argument("--ollama-model", default="gemma:2b")
     args = parser.parse_args()
 
-    project = get_project_details(args.db_path, args.project_id)
+    if args.project_stdin:
+        project = json.load(sys.stdin)
+        args.db_path = None
+    else:
+        project = get_project_details(args.db_path, args.project_id)
     if not project:
         print(f"Project ID {args.project_id} not found.")
         sys.exit(1)
@@ -948,10 +986,13 @@ def main():
                     extracted_title = info.get('title')
                     if extracted_title and (not video_title or video_title in ["YouTube Video Project", "Untitled Video"]):
                         video_title = extracted_title
-                        conn = sqlite3.connect(args.db_path)
-                        conn.execute("UPDATE video_projects SET title = ? WHERE id = ?", (video_title, project_id))
-                        conn.commit()
-                        conn.close()
+                        if args.db_path is None:
+                            emit_worker_event({"type": "title", "title": video_title})
+                        else:
+                            conn = sqlite3.connect(args.db_path)
+                            conn.execute("UPDATE video_projects SET title = ? WHERE id = ?", (video_title, project_id))
+                            conn.commit()
+                            conn.close()
         else:
             input_video_path = project['video_file_path']
             if not os.path.isabs(input_video_path):
@@ -962,10 +1003,13 @@ def main():
         total_duration = get_video_duration(input_video_path)
         print(f"Total video duration: {total_duration}s")
 
-        conn = sqlite3.connect(args.db_path)
-        conn.execute("UPDATE video_projects SET duration_seconds = ? WHERE id = ?", (int(total_duration), project_id))
-        conn.commit()
-        conn.close()
+        if args.db_path is None:
+            emit_worker_event({"type": "duration", "duration_seconds": int(total_duration)})
+        else:
+            conn = sqlite3.connect(args.db_path)
+            conn.execute("UPDATE video_projects SET duration_seconds = ? WHERE id = ?", (int(total_duration), project_id))
+            conn.commit()
+            conn.close()
 
         # Check if video is a Song/Music video or Dialogue/Speech video based on project mode
         if project_mode == "song":

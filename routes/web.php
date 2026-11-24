@@ -3,13 +3,17 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\RecentShortsController;
 use App\Http\Controllers\VideoProjectController;
+use App\Http\Middleware\EnsureActiveUser;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+
+Route::get('/api/recent-shorts', RecentShortsController::class)->name('api.recent-shorts');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -18,9 +22,10 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 });
 
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
 // Authenticated routes
-Route::middleware('auth')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::middleware(['auth', EnsureActiveUser::class])->group(function () {
     
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -49,12 +54,14 @@ Route::middleware('auth')->group(function () {
 });
 
 // Admin routes (Protected by auth and admin middleware)
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', EnsureActiveUser::class, 'admin'])->group(function () {
     Route::get('/', [\App\Http\Controllers\AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/users', [\App\Http\Controllers\AdminController::class, 'users'])->name('users');
+    Route::get('/users/{user}', [\App\Http\Controllers\AdminController::class, 'showUser'])->name('users.show');
     Route::post('/users/{user}/status', [\App\Http\Controllers\AdminController::class, 'updateUserStatus'])->name('users.status');
     Route::post('/users/{user}/tokens', [\App\Http\Controllers\AdminController::class, 'adjustTokens'])->name('users.tokens');
     Route::get('/projects', [\App\Http\Controllers\AdminController::class, 'projects'])->name('projects');
+    Route::get('/projects/{project}', [\App\Http\Controllers\AdminController::class, 'showProject'])->name('projects.show');
     Route::get('/transactions', [\App\Http\Controllers\AdminController::class, 'transactions'])->name('transactions');
     Route::get('/payments', [\App\Http\Controllers\AdminController::class, 'payments'])->name('payments');
 });

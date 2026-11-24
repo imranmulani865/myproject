@@ -1,282 +1,152 @@
 @extends('layouts.app')
 
-@section('title', 'Manage Users & Tokens')
+@section('title', 'Users and credits • Admin')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="adminUsersManager()">
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <div>
-            <div class="flex items-center gap-2 text-xs text-slate-400 mb-1">
-                <a href="{{ route('admin.dashboard') }}" class="hover:text-indigo-400 transition">Admin Panel</a>
-                <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                <span class="text-slate-200">User Management</span>
+<div class="space-y-7" x-data="adminUsersManager()">
+    <header class="relative overflow-hidden rounded-[1.75rem] border border-[#DDE4F0] bg-white p-6 shadow-[0_16px_50px_rgba(21,34,56,.06)] sm:p-8">
+        <div class="absolute -right-12 -top-24 h-64 w-64 rounded-full bg-[#DDE2FF]/70 blur-3xl" aria-hidden="true"></div>
+        <div class="relative">
+            <a href="{{ route('admin.dashboard') }}" class="text-xs font-bold text-[#4251CE] hover:underline">Admin overview</a>
+            <h1 class="mt-3 font-['Space_Grotesk'] text-3xl font-bold tracking-[-.05em] text-[#152238] sm:text-4xl">Users and credits</h1>
+            <p class="mt-2 text-sm text-[#687684]">Find an account, check its activity, and manage its credit balance.</p>
+        </div>
+    </header>
+
+    @include('admin.navigation')
+
+    <section class="rounded-2xl border border-[#DDE4F0] bg-white p-4 shadow-[0_10px_30px_rgba(21,34,56,.04)] sm:p-5" aria-label="Filter users">
+        <form method="GET" action="{{ route('admin.users') }}" class="grid gap-3 md:grid-cols-[minmax(0,1fr)_190px_auto] md:items-end">
+            <div>
+                <label for="admin-user-search" class="mb-1.5 block text-xs font-bold text-[#526078]">Search users</label>
+                <input id="admin-user-search" type="search" name="search" value="{{ request('search') }}" placeholder="Name or email"
+                       class="min-h-11 w-full rounded-xl border border-[#DDE4F0] bg-[#F8FAFF] px-4 text-sm text-[#152238] placeholder:text-[#8A96A8] focus:border-[#4D5CFF] focus:outline-none focus:ring-2 focus:ring-[#DDE2FF]">
             </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3">
-                <span class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center border border-indigo-500/30">
-                    <i class="fa-solid fa-users"></i>
-                </span>
-                User Management & Token Credit
-            </h1>
-        </div>
-
-        <div class="flex items-center gap-2">
-            <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl border border-slate-700 transition">
-                <i class="fa-solid fa-arrow-left"></i>
-                Dashboard
-            </a>
-            <a href="{{ route('admin.transactions') }}" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl border border-slate-700 transition">
-                <i class="fa-solid fa-receipt text-amber-400"></i>
-                Token Ledger
-            </a>
-        </div>
-    </div>
-
-    <!-- Alert Messages -->
-    @if(session('success'))
-        <div class="mb-6 p-4 rounded-2xl bg-emerald-950/80 border border-emerald-800/80 text-emerald-200 text-xs sm:text-sm flex items-center gap-3 shadow-lg">
-            <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
-            <span>{{ session('success') }}</span>
-        </div>
-    @endif
-    @if(session('error'))
-        <div class="mb-6 p-4 rounded-2xl bg-rose-950/80 border border-rose-800/80 text-rose-200 text-xs sm:text-sm flex items-center gap-3 shadow-lg">
-            <i class="fa-solid fa-circle-xmark text-rose-400 text-lg"></i>
-            <span>{{ session('error') }}</span>
-        </div>
-    @endif
-
-    <!-- Search & Filter Bar -->
-    <div class="mb-6 bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
-        <form method="GET" action="{{ route('admin.users') }}" class="flex flex-col sm:flex-row items-center gap-3">
-            <div class="relative flex-1 w-full">
-                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </div>
-                <input type="text" name="search" value="{{ request('search') }}"
-                       placeholder="Search by name or email address..."
-                       class="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            </div>
-
-            <div class="w-full sm:w-48">
-                <select name="status" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-700/80 rounded-xl text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <option value="">All Statuses</option>
+            <div>
+                <label for="admin-user-status" class="mb-1.5 block text-xs font-bold text-[#526078]">Status</label>
+                <select id="admin-user-status" name="status" class="min-h-11 w-full rounded-xl border border-[#DDE4F0] bg-[#F8FAFF] px-4 text-sm text-[#152238] focus:border-[#4D5CFF] focus:outline-none focus:ring-2 focus:ring-[#DDE2FF]">
+                    <option value="">All statuses</option>
                     <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
                     <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
                     <option value="suspended" {{ request('status') === 'suspended' ? 'selected' : '' }}>Suspended</option>
                 </select>
             </div>
-
-            <div class="flex items-center gap-2 w-full sm:w-auto">
-                <button type="submit" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-semibold transition">
-                    Filter
-                </button>
+            <div class="flex gap-2">
+                <button type="submit" class="inline-flex min-h-11 flex-1 items-center justify-center rounded-xl bg-[#4D5CFF] px-5 text-sm font-bold text-white hover:bg-[#3949E9] md:flex-none">Apply filters</button>
                 @if(request('search') || request('status'))
-                    <a href="{{ route('admin.users') }}" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs sm:text-sm transition">
-                        Reset
-                    </a>
+                    <a href="{{ route('admin.users') }}" class="inline-flex min-h-11 items-center justify-center rounded-xl border border-[#DDE4F0] bg-white px-4 text-sm font-bold text-[#526078] hover:bg-[#F6F7FF]">Reset</a>
                 @endif
             </div>
         </form>
-    </div>
+    </section>
 
-    <!-- Users Table -->
-    <div class="rounded-2xl bg-slate-900/80 border border-slate-800 overflow-hidden shadow-xl">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm text-slate-300">
-                <thead class="bg-slate-950/80 text-xs uppercase text-slate-400 tracking-wider">
+    <section class="overflow-hidden rounded-2xl border border-[#DDE4F0] bg-white shadow-[0_12px_34px_rgba(21,34,56,.05)]" aria-labelledby="users-table-title">
+        <div class="flex items-center justify-between border-b border-[#E8ECF3] px-5 py-4 sm:px-6">
+            <h2 id="users-table-title" class="font-['Space_Grotesk'] text-lg font-bold text-[#152238]">Accounts</h2>
+            <span class="text-xs font-semibold text-[#687684]">{{ number_format($users->total()) }} total</span>
+        </div>
+        <div class="overflow-x-auto" role="region" aria-label="Users table" tabindex="0">
+            <table class="min-w-[1020px] w-full text-left text-sm text-[#526078]">
+                <thead class="bg-[#F8FAFF] text-xs font-bold text-[#687684]">
                     <tr>
-                        <th class="px-6 py-4 font-semibold">User Details</th>
-                        <th class="px-6 py-4 font-semibold">Role</th>
-                        <th class="px-6 py-4 font-semibold">Status</th>
-                        <th class="px-6 py-4 font-semibold">Token Balance</th>
-                        <th class="px-6 py-4 font-semibold text-center">Projects / Shorts</th>
-                        <th class="px-6 py-4 font-semibold">Joined Date</th>
-                        <th class="px-6 py-4 font-semibold text-right">Actions</th>
+                        <th scope="col" class="px-5 py-3.5">User</th>
+                        <th scope="col" class="px-5 py-3.5">Role</th>
+                        <th scope="col" class="px-5 py-3.5">Status</th>
+                        <th scope="col" class="px-5 py-3.5">Credits</th>
+                        <th scope="col" class="px-5 py-3.5">Projects / shorts</th>
+                        <th scope="col" class="px-5 py-3.5">Joined</th>
+                        <th scope="col" class="px-5 py-3.5 text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-800/80">
+                <tbody class="divide-y divide-[#E8ECF3]">
                     @forelse($users as $user)
-                        <tr class="hover:bg-slate-800/40 transition">
-                            <!-- User Details -->
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-sm font-bold text-white shadow">
-                                        {{ strtoupper(substr($user->name, 0, 1)) }}
-                                    </div>
-                                    <div>
-                                        <div class="font-bold text-white flex items-center gap-2">
-                                            <span>{{ $user->name }}</span>
-                                            @if($user->id === auth()->id())
-                                                <span class="text-[10px] font-semibold text-slate-400">(You)</span>
-                                            @endif
-                                        </div>
-                                        <div class="text-xs text-slate-400">{{ $user->email }}</div>
+                        <tr class="hover:bg-[#F8FAFF]">
+                            <td class="px-5 py-4">
+                                <div class="flex min-w-0 items-center gap-3">
+                                    <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#E8EAFF] font-bold text-[#4251CE]">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                                    <div class="min-w-0">
+                                        <a href="{{ route('admin.users.show', $user->id) }}" class="block max-w-[220px] truncate font-bold text-[#152238] hover:text-[#4251CE]">{{ $user->name }}@if($user->id === auth()->id()) <span class="font-medium text-[#8792A6]">(You)</span>@endif</a>
+                                        <p class="max-w-[220px] truncate text-xs text-[#687684]">{{ $user->email }}</p>
                                     </div>
                                 </div>
                             </td>
-
-                            <!-- Role -->
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider {{ $user->isAdmin() ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-slate-800 text-slate-300 border border-slate-700' }}">
-                                    {{ $user->role }}
-                                </span>
-                            </td>
-
-                            <!-- Status Switcher -->
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <form method="POST" action="{{ route('admin.users.status', $user->id) }}" class="inline-block">
+                            <td class="px-5 py-4"><span class="rounded-full border px-2.5 py-1 text-xs font-bold capitalize {{ $user->isAdmin() ? 'border-[#D8DFFF] bg-[#F1F3FF] text-[#4251CE]' : 'border-[#DDE4F0] bg-[#F8FAFF] text-[#526078]' }}">{{ $user->role }}</span></td>
+                            <td class="px-5 py-4">
+                                <form method="POST" action="{{ route('admin.users.status', $user->id) }}">
                                     @csrf
-                                    <select name="status" onchange="this.form.submit()"
-                                            class="text-xs font-semibold px-2.5 py-1 rounded-lg border focus:outline-none transition cursor-pointer {{ $user->status === 'active' ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800' : ($user->status === 'pending' ? 'bg-amber-950/60 text-amber-300 border-amber-800' : 'bg-rose-950/60 text-rose-300 border-rose-800') }}">
+                                    <label for="status-{{ $user->id }}" class="sr-only">Status for {{ $user->name }}</label>
+                                    <select id="status-{{ $user->id }}" name="status" onchange="this.form.submit()"
+                                            class="min-h-10 cursor-pointer rounded-xl border px-3 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-[#DDE2FF] {{ $user->status === 'active' ? 'border-emerald-200 bg-emerald-50 text-[#19734E]' : ($user->status === 'pending' ? 'border-amber-200 bg-amber-50 text-[#8D5D14]' : 'border-rose-200 bg-rose-50 text-[#B7473D]') }}">
                                         <option value="active" {{ $user->status === 'active' ? 'selected' : '' }}>Active</option>
                                         <option value="pending" {{ $user->status === 'pending' ? 'selected' : '' }}>Pending</option>
                                         <option value="suspended" {{ $user->status === 'suspended' ? 'selected' : '' }}>Suspended</option>
                                     </select>
                                 </form>
                             </td>
-
-                            <!-- Token Balance -->
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-sm font-black text-amber-300">
-                                        {{ number_format($user->tokens) }}
-                                    </span>
-                                    <span class="text-xs text-amber-500/80">Tokens</span>
+                            <td class="px-5 py-4 font-['Space_Grotesk'] font-bold text-[#152238]">{{ number_format($user->tokens) }}</td>
+                            <td class="px-5 py-4 text-xs"><strong class="text-[#152238]">{{ $user->video_projects_count }}</strong> projects <span class="text-[#A0AABD]">/</span> <strong class="text-[#4251CE]">{{ $user->generated_shorts_count }}</strong> shorts</td>
+                            <td class="px-5 py-4 whitespace-nowrap text-xs text-[#687684]">{{ $user->created_at->format('M d, Y') }}</td>
+                            <td class="px-5 py-4 text-right">
+                                <div class="flex justify-end gap-2">
+                                    <a href="{{ route('admin.users.show', $user->id) }}" class="inline-flex min-h-10 items-center rounded-xl border border-[#DDE4F0] px-3 text-xs font-bold text-[#4251CE] hover:bg-[#F1F3FF]">View</a>
+                                    <button type="button" data-name="{{ $user->name }}" data-action="{{ route('admin.users.tokens', $user->id) }}" @click="openAdjustModal({{ $user->id }}, $el.dataset.name, {{ $user->tokens }}, $el.dataset.action)"
+                                            class="inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-[#4D5CFF] px-3 text-xs font-bold text-white hover:bg-[#3949E9]">
+                                        <i class="fa-solid fa-coins" aria-hidden="true"></i>Adjust credits
+                                    </button>
                                 </div>
-                            </td>
-
-                            <!-- Projects & Shorts Count -->
-                            <td class="px-6 py-4 text-center whitespace-nowrap">
-                                <span class="font-bold text-white">{{ $user->video_projects_count }}</span>
-                                <span class="text-xs text-slate-500">proj /</span>
-                                <span class="font-bold text-indigo-400">{{ $user->generated_shorts_count }}</span>
-                                <span class="text-xs text-slate-500">shorts</span>
-                            </td>
-
-                            <!-- Joined Date -->
-                            <td class="px-6 py-4 text-xs text-slate-400 whitespace-nowrap">
-                                {{ $user->created_at->format('M d, Y') }}
-                            </td>
-
-                            <!-- Actions -->
-                            <td class="px-6 py-4 text-right whitespace-nowrap">
-                                <button type="button" @click="openAdjustModal({{ $user->id }}, '{{ addslashes($user->name) }}', {{ $user->tokens }})"
-                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold transition shadow-sm">
-                                    <i class="fa-solid fa-coins"></i>
-                                    <span>Adjust Tokens</span>
-                                </button>
                             </td>
                         </tr>
                     @empty
-                        <tr>
-                            <td colspan="7" class="px-6 py-12 text-center text-slate-500 text-sm">
-                                No users matched your search criteria.
-                            </td>
-                        </tr>
+                        <tr><td colspan="7" class="px-6 py-12 text-center text-sm text-[#687684]">No users match these filters.</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-
         @if($users->hasPages())
-            <div class="px-6 py-4 border-t border-slate-800">
-                {{ $users->links() }}
-            </div>
+            <div class="border-t border-[#E8ECF3] px-5 py-4">{{ $users->links() }}</div>
         @endif
-    </div>
+    </section>
 
-    <!-- ADJUST TOKENS MODAL -->
-    <div x-cloak x-show="showModal"
-         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
-         x-transition:enter="transition ease-out duration-200"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-150"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0">
-
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative" @click.outside="showModal = false">
-            <button @click="showModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-white">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-
-            <div class="flex items-center gap-3 mb-5">
-                <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg border border-amber-500/30">
-                    <i class="fa-solid fa-coins"></i>
-                </div>
+    <div x-cloak x-show="showModal" @keydown.escape.window="showModal = false"
+         class="fixed inset-0 z-50 flex items-center justify-center bg-[#152238]/55 p-4 backdrop-blur-sm"
+         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+        <div role="dialog" aria-modal="true" aria-labelledby="adjust-credits-title"
+             class="relative w-full max-w-md rounded-2xl border border-[#DDE4F0] bg-white p-6 shadow-[0_24px_70px_rgba(21,34,56,.25)]" @click.outside="showModal = false">
+            <button type="button" @click="showModal = false" aria-label="Close credit adjustment" class="absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-lg text-[#687684] hover:bg-[#F1F3FF] hover:text-[#152238]"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+            <div class="mb-5 flex items-center gap-3">
+                <span class="grid h-11 w-11 place-items-center rounded-xl bg-[#FFF3E7] text-[#B66C1A]"><i class="fa-solid fa-coins" aria-hidden="true"></i></span>
                 <div>
-                    <h3 class="text-lg font-bold text-white">Manual Token Adjustment</h3>
-                    <p class="text-xs text-slate-400">Credit or debit tokens for user</p>
+                    <h2 id="adjust-credits-title" class="font-['Space_Grotesk'] text-lg font-bold text-[#152238]">Adjust credits</h2>
+                    <p class="text-xs text-[#687684]">Credit or debit a user's balance.</p>
                 </div>
             </div>
-
-            <!-- Target User Banner -->
-            <div class="p-3 bg-slate-950 border border-slate-800 rounded-xl mb-5 flex items-center justify-between">
-                <div>
-                    <span class="block text-[10px] uppercase font-semibold text-slate-500">User Account</span>
-                    <span class="text-sm font-bold text-white" x-text="targetUserName"></span>
-                </div>
-                <div class="text-right">
-                    <span class="block text-[10px] uppercase font-semibold text-slate-500">Current Balance</span>
-                    <span class="text-sm font-black text-amber-400" x-text="targetUserTokens + ' Tokens'"></span>
-                </div>
+            <div class="mb-5 flex items-center justify-between gap-3 rounded-xl border border-[#DDE4F0] bg-[#F8FAFF] p-3">
+                <div><span class="block text-xs text-[#687684]">User</span><strong class="text-sm text-[#152238]" x-text="targetUserName"></strong></div>
+                <div class="text-right"><span class="block text-xs text-[#687684]">Current balance</span><strong class="text-sm text-[#4251CE]" x-text="targetUserTokens + ' credits'"></strong></div>
             </div>
-
-            <!-- Adjustment Form -->
-            <form :action="'/admin/users/' + targetUserId + '/tokens'" method="POST" class="space-y-4">
+            <form :action="targetAction" method="POST" class="space-y-4">
                 @csrf
-
-                <!-- Action Type Switcher -->
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-                        Operation Type
-                    </label>
+                <fieldset>
+                    <legend class="mb-2 text-xs font-bold text-[#526078]">Operation</legend>
                     <div class="grid grid-cols-2 gap-2">
-                        <label class="cursor-pointer">
-                            <input type="radio" name="action" value="credit" x-model="actionType" class="peer sr-only">
-                            <div class="p-2.5 text-center rounded-xl bg-slate-950 border border-slate-700 peer-checked:border-emerald-500 peer-checked:bg-emerald-950/40 peer-checked:text-emerald-300 text-slate-300 font-bold text-xs transition">
-                                <i class="fa-solid fa-plus mr-1"></i> Credit (+)
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="action" value="debit" x-model="actionType" class="peer sr-only">
-                            <div class="p-2.5 text-center rounded-xl bg-slate-950 border border-slate-700 peer-checked:border-rose-500 peer-checked:bg-rose-950/40 peer-checked:text-rose-300 text-slate-300 font-bold text-xs transition">
-                                <i class="fa-solid fa-minus mr-1"></i> Debit (-)
-                            </div>
-                        </label>
+                        <label class="cursor-pointer"><input type="radio" name="action" value="credit" x-model="actionType" class="peer sr-only"><span class="block rounded-xl border border-[#DDE4F0] bg-[#F8FAFF] p-3 text-center text-xs font-bold text-[#526078] peer-checked:border-[#77C7A4] peer-checked:bg-[#EDFAF2] peer-checked:text-[#19734E] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-[#4D5CFF]"><i class="fa-solid fa-plus mr-1" aria-hidden="true"></i>Credit (+)</span></label>
+                        <label class="cursor-pointer"><input type="radio" name="action" value="debit" x-model="actionType" class="peer sr-only"><span class="block rounded-xl border border-[#DDE4F0] bg-[#F8FAFF] p-3 text-center text-xs font-bold text-[#526078] peer-checked:border-[#F0AAA4] peer-checked:bg-[#FFF1EF] peer-checked:text-[#B7473D] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-[#4D5CFF]"><i class="fa-solid fa-minus mr-1" aria-hidden="true"></i>Debit (-)</span></label>
                     </div>
-                </div>
-
-                <!-- Amount -->
+                </fieldset>
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-                        Number of Tokens <span class="text-rose-400">*</span>
-                    </label>
-                    <input type="number" name="amount" min="1" max="10000" required placeholder="e.g. 50, 100, 350"
-                           class="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 font-bold">
+                    <label for="adjust-credit-amount" class="mb-1.5 block text-xs font-bold text-[#526078]">Number of credits</label>
+                    <input id="adjust-credit-amount" type="number" name="amount" min="1" max="10000" required placeholder="e.g. 50"
+                           class="min-h-11 w-full rounded-xl border border-[#DDE4F0] bg-[#F8FAFF] px-4 text-sm font-bold text-[#152238] placeholder:text-[#8A96A8] focus:border-[#4D5CFF] focus:outline-none focus:ring-2 focus:ring-[#DDE2FF]">
                 </div>
-
-                <!-- Reason / Audit Note -->
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-                        Audit Note / Reason <span class="text-rose-400">*</span>
-                    </label>
-                    <input type="text" name="note" required placeholder="e.g. UPI payment received ₹799 (UTR #12345)"
-                           class="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    <label for="adjust-credit-note" class="mb-1.5 block text-xs font-bold text-[#526078]">Audit note / reason</label>
+                    <input id="adjust-credit-note" type="text" name="note" required placeholder="Why is this balance changing?"
+                           class="min-h-11 w-full rounded-xl border border-[#DDE4F0] bg-[#F8FAFF] px-4 text-sm text-[#152238] placeholder:text-[#8A96A8] focus:border-[#4D5CFF] focus:outline-none focus:ring-2 focus:ring-[#DDE2FF]">
                 </div>
-
-                <!-- Submit / Cancel -->
-                <div class="flex gap-3 pt-3">
-                    <button type="button" @click="showModal = false" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition border border-slate-700">
-                        Cancel
-                    </button>
-                    <button type="submit"
-                            :class="actionType === 'credit' ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/30' : 'bg-rose-600 hover:bg-rose-500 text-white shadow-rose-600/30'"
-                            class="flex-1 py-2.5 rounded-xl text-xs font-bold transition shadow-lg flex items-center justify-center gap-2">
-                        <i :class="actionType === 'credit' ? 'fa-solid fa-plus-circle' : 'fa-solid fa-minus-circle'"></i>
-                        <span x-text="actionType === 'credit' ? 'Add Tokens' : 'Deduct Tokens'"></span>
-                    </button>
+                <div class="flex gap-3 pt-2">
+                    <button type="button" @click="showModal = false" class="min-h-11 flex-1 rounded-xl border border-[#DDE4F0] bg-white px-4 text-sm font-bold text-[#526078] hover:bg-[#F6F7FF]">Cancel</button>
+                    <button type="submit" class="min-h-11 flex-1 rounded-xl bg-[#4D5CFF] px-4 text-sm font-bold text-white hover:bg-[#3949E9]" x-text="actionType === 'credit' ? 'Add credits' : 'Deduct credits'"></button>
                 </div>
             </form>
         </div>
@@ -291,16 +161,17 @@ function adminUsersManager() {
         targetUserId: null,
         targetUserName: '',
         targetUserTokens: 0,
+        targetAction: '',
         actionType: 'credit',
-
-        openAdjustModal(id, name, tokens) {
+        openAdjustModal(id, name, tokens, action) {
             this.targetUserId = id;
             this.targetUserName = name;
             this.targetUserTokens = tokens;
+            this.targetAction = action;
             this.actionType = 'credit';
             this.showModal = true;
         }
-    }
+    };
 }
 </script>
 @endpush

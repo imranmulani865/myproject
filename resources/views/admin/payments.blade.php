@@ -1,111 +1,108 @@
 @extends('layouts.app')
 
-@section('title', 'Admin - Razorpay Payments & Orders')
+@section('title', 'Payments • Admin')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <div>
-            <div class="flex items-center gap-2 text-xs text-slate-400 mb-1">
-                <a href="{{ route('admin.dashboard') }}" class="hover:text-indigo-400 transition">Admin Panel</a>
-                <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                <span class="text-slate-200">Payment Orders</span>
+<div class="space-y-7">
+    <header class="relative overflow-hidden rounded-[1.75rem] border border-[#DDE4F0] bg-white p-6 shadow-[0_16px_50px_rgba(21,34,56,.06)] sm:p-8">
+        <div class="absolute -right-12 -top-24 h-64 w-64 rounded-full bg-[#DDE2FF]/70 blur-3xl" aria-hidden="true"></div>
+        <div class="relative">
+            <a href="{{ route('admin.dashboard') }}" class="text-xs font-bold text-[#4251CE] hover:underline">Admin overview</a>
+            <h1 class="mt-3 font-['Space_Grotesk'] text-3xl font-bold tracking-[-.05em] text-[#152238] sm:text-4xl">Payments</h1>
+            <p class="mt-2 text-sm text-[#687684]">Review Razorpay orders, plan purchases, and issued credits.</p>
+        </div>
+    </header>
+
+    @include('admin.navigation')
+
+    <section class="rounded-2xl border border-[#DDE4F0] bg-white p-4 shadow-[0_10px_30px_rgba(21,34,56,.04)] sm:p-5" aria-label="Filter payments">
+        <form method="GET" action="{{ route('admin.payments') }}" class="grid gap-3 md:grid-cols-[minmax(0,1fr)_155px_155px_auto] md:items-end">
+            <div>
+                <label for="admin-payment-search" class="mb-1.5 block text-xs font-bold text-[#526078]">Search payments</label>
+                <input id="admin-payment-search" type="search" name="search" value="{{ request('search') }}" placeholder="User, email, order, or payment ID"
+                       class="min-h-11 w-full rounded-xl border border-[#DDE4F0] bg-[#F8FAFF] px-4 text-sm text-[#152238] placeholder:text-[#8A96A8] focus:border-[#4D5CFF] focus:outline-none focus:ring-2 focus:ring-[#DDE2FF]">
             </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3">
-                <span class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center border border-blue-500/30">
-                    <i class="fa-solid fa-credit-card"></i>
-                </span>
-                Razorpay Payment Transactions
-            </h1>
-        </div>
+            <div>
+                <label for="admin-payment-status" class="mb-1.5 block text-xs font-bold text-[#526078]">Status</label>
+                <select id="admin-payment-status" name="status" class="min-h-11 w-full rounded-xl border border-[#DDE4F0] bg-[#F8FAFF] px-4 text-sm text-[#152238] focus:border-[#4D5CFF] focus:outline-none focus:ring-2 focus:ring-[#DDE2FF]">
+                    <option value="">All statuses</option>
+                    @foreach(['created' => 'Created', 'paid' => 'Paid', 'failed' => 'Failed'] as $value => $label)
+                        <option value="{{ $value }}" @selected(request('status') === $value)>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label for="admin-payment-plan" class="mb-1.5 block text-xs font-bold text-[#526078]">Plan</label>
+                <select id="admin-payment-plan" name="plan" class="min-h-11 w-full rounded-xl border border-[#DDE4F0] bg-[#F8FAFF] px-4 text-sm text-[#152238] focus:border-[#4D5CFF] focus:outline-none focus:ring-2 focus:ring-[#DDE2FF]">
+                    <option value="">All plans</option>
+                    @foreach(['trial', 'starter', 'pro', 'agency', 'mega'] as $plan)
+                        <option value="{{ $plan }}" @selected(request('plan') === $plan)>{{ ucfirst($plan) }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="flex gap-2">
+                <button type="submit" class="inline-flex min-h-11 flex-1 items-center justify-center rounded-xl bg-[#4D5CFF] px-5 text-sm font-bold text-white hover:bg-[#3949E9] md:flex-none">Apply filters</button>
+                @if(request('search') || request('status') || request('plan'))
+                    <a href="{{ route('admin.payments') }}" class="inline-flex min-h-11 items-center justify-center rounded-xl border border-[#DDE4F0] bg-white px-4 text-sm font-bold text-[#526078] hover:bg-[#F6F7FF]">Reset</a>
+                @endif
+            </div>
+        </form>
+    </section>
 
-        <div class="flex items-center gap-2">
-            <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl border border-slate-700 transition">
-                <i class="fa-solid fa-arrow-left"></i>
-                Dashboard
-            </a>
-            <a href="{{ route('admin.transactions') }}" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl border border-slate-700 transition">
-                <i class="fa-solid fa-receipt text-amber-400"></i>
-                Token Ledger
-            </a>
+    <section class="overflow-hidden rounded-2xl border border-[#DDE4F0] bg-white shadow-[0_12px_34px_rgba(21,34,56,.05)]" aria-labelledby="payments-table-title">
+        <div class="flex items-center justify-between border-b border-[#E8ECF3] px-5 py-4 sm:px-6">
+            <h2 id="payments-table-title" class="font-['Space_Grotesk'] text-lg font-bold text-[#152238]">Payment orders</h2>
+            <span class="text-xs font-semibold text-[#687684]">{{ number_format($payments->total()) }} results</span>
         </div>
-    </div>
-
-    <!-- Payments Table -->
-    <div class="rounded-2xl bg-slate-900/80 border border-slate-800 overflow-hidden shadow-xl">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm text-slate-300">
-                <thead class="bg-slate-950/80 text-xs uppercase text-slate-400 tracking-wider">
+        <div class="overflow-x-auto" role="region" aria-label="Payments table" tabindex="0">
+            <table class="min-w-[1000px] w-full text-left text-sm text-[#526078]">
+                <thead class="bg-[#F8FAFF] text-xs font-bold text-[#687684]">
                     <tr>
-                        <th class="px-6 py-4 font-semibold">Date & Time</th>
-                        <th class="px-6 py-4 font-semibold">User</th>
-                        <th class="px-6 py-4 font-semibold">Plan</th>
-                        <th class="px-6 py-4 font-semibold">Amount</th>
-                        <th class="px-6 py-4 font-semibold">Tokens</th>
-                        <th class="px-6 py-4 font-semibold">Status</th>
-                        <th class="px-6 py-4 font-semibold">Order / Payment ID</th>
+                        <th scope="col" class="px-5 py-3.5">Date and time</th>
+                        <th scope="col" class="px-5 py-3.5">User</th>
+                        <th scope="col" class="px-5 py-3.5">Plan</th>
+                        <th scope="col" class="px-5 py-3.5">Amount</th>
+                        <th scope="col" class="px-5 py-3.5">Credits</th>
+                        <th scope="col" class="px-5 py-3.5">Status</th>
+                        <th scope="col" class="px-5 py-3.5">Order / payment ID</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-800/80">
-                    @forelse($payments as $pay)
-                        <tr class="hover:bg-slate-800/40 transition">
-                            <td class="px-6 py-4 text-xs text-slate-400 whitespace-nowrap">
-                                {{ $pay->created_at->format('M d, Y • h:i:s A') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="font-bold text-white text-xs">{{ $pay->user ? $pay->user->name : 'Deleted User' }}</div>
-                                <div class="text-[11px] text-slate-500">{{ $pay->user ? $pay->user->email : '' }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider {{ $pay->plan_id === 'agency' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : ($pay->plan_id === 'pro' ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' : 'bg-slate-800 text-slate-300') }}">
-                                    {{ $pay->plan_id }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 font-extrabold text-white whitespace-nowrap">
-                                {{ $pay->formatted_amount }}
-                            </td>
-                            <td class="px-6 py-4 font-extrabold text-amber-400 whitespace-nowrap">
-                                +{{ number_format($pay->tokens) }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                @if($pay->status === 'paid')
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                                        <i class="fa-solid fa-circle-check text-[10px]"></i> Paid
-                                    </span>
-                                @elseif($pay->status === 'created')
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                                        <i class="fa-solid fa-clock text-[10px]"></i> Pending
-                                    </span>
+                <tbody class="divide-y divide-[#E8ECF3]">
+                    @forelse($payments as $payment)
+                        <tr class="hover:bg-[#F8FAFF]">
+                            <td class="whitespace-nowrap px-5 py-4 text-xs text-[#687684]">{{ $payment->created_at->format('M d, Y · h:i:s A') }}</td>
+                            <td class="px-5 py-4">
+                                @if($payment->user)
+                                    <a href="{{ route('admin.users.show', $payment->user->id) }}" class="block max-w-[180px] truncate font-semibold text-[#152238] hover:text-[#4251CE]">{{ $payment->user->name }}</a>
+                                    <span class="block max-w-[180px] truncate text-xs text-[#8792A6]">{{ $payment->user->email }}</span>
                                 @else
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30">
-                                        <i class="fa-solid fa-circle-xmark text-[10px]"></i> Failed
-                                    </span>
+                                    <span class="text-[#8792A6]">Deleted user</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 text-xs font-mono text-slate-400 whitespace-nowrap">
-                                <div><span class="text-slate-500">Ord:</span> {{ $pay->razorpay_order_id }}</div>
-                                @if($pay->razorpay_payment_id)
-                                    <div><span class="text-emerald-500">Pay:</span> {{ $pay->razorpay_payment_id }}</div>
+                            <td class="px-5 py-4"><span class="inline-flex rounded-full border border-[#D8DFFF] bg-[#F1F3FF] px-2.5 py-1 text-xs font-bold capitalize text-[#4251CE]">{{ $payment->plan_id }}</span></td>
+                            <td class="whitespace-nowrap px-5 py-4 font-['Space_Grotesk'] font-bold text-[#152238]">{{ $payment->formatted_amount }}</td>
+                            <td class="whitespace-nowrap px-5 py-4 font-semibold text-[#152238]">+{{ number_format($payment->tokens) }}</td>
+                            <td class="px-5 py-4">
+                                <span class="inline-flex rounded-full border px-2.5 py-1 text-xs font-bold {{ $payment->status === 'paid' ? 'border-emerald-200 bg-emerald-50 text-[#19734E]' : ($payment->status === 'created' ? 'border-amber-200 bg-amber-50 text-[#8D5D14]' : 'border-rose-200 bg-rose-50 text-[#B7473D]') }}">
+                                    {{ $payment->status === 'created' ? 'Pending' : ucfirst($payment->status) }}
+                                </span>
+                            </td>
+                            <td class="px-5 py-4 font-mono text-[11px] text-[#687684]">
+                                <div><span class="font-semibold text-[#8792A6]">Order</span> {{ $payment->razorpay_order_id }}</div>
+                                @if($payment->razorpay_payment_id)
+                                    <div class="mt-1"><span class="font-semibold text-[#8792A6]">Paid</span> {{ $payment->razorpay_payment_id }}</div>
                                 @endif
                             </td>
                         </tr>
                     @empty
-                        <tr>
-                            <td colspan="7" class="px-6 py-12 text-center text-slate-500 text-sm">
-                                No Razorpay payment orders recorded yet.
-                            </td>
-                        </tr>
+                        <tr><td colspan="7" class="px-6 py-12 text-center text-sm text-[#687684]">No payments match these filters.</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-
         @if($payments->hasPages())
-            <div class="px-6 py-4 border-t border-slate-800">
-                {{ $payments->links() }}
-            </div>
+            <div class="border-t border-[#E8ECF3] px-5 py-4">{{ $payments->links() }}</div>
         @endif
-    </div>
+    </section>
 </div>
 @endsection
